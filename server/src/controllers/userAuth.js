@@ -81,7 +81,7 @@ export const login = async(req, res)=>{
 
 export const logout = async(req, res)=>{
     try{
-        const {token} = req.cookies
+        const token = req.headers.authorization?.split(" ")[1] || {}
         // console.log(token)
         const payload = jwt.decode(token)
 
@@ -90,7 +90,7 @@ export const logout = async(req, res)=>{
         await redisClient.set(`token:${token}`, "blocked")
         await redisClient.expireAt(`token:${token}`, exp)
         // console.log("redis")
-        res.cookie("token",null, {expiresIn: Date.now()})
+        // res.cookie("token",null, {expiresIn: Date.now()})
         res.status(200).send({message: "logout success", success: true})
     }catch(err){
         res.status(500).send({message: "logout failed", success: false, err: err.message})

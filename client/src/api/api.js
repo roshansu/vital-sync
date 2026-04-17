@@ -1,3 +1,6 @@
+import { getUserData } from "../lib/setLocalData"
+
+
 const baseApi = 'http://localhost:5000'
 
 export const userAuth = async(route, data)=>{
@@ -16,4 +19,23 @@ export const userAuth = async(route, data)=>{
     }catch(err){
         console.log(err)
     }
+}
+
+const userData = getUserData()
+
+export const userLogout = async(route)=>{
+    try{
+        const res = await fetch(`${baseApi}/api/${route}`, {
+            method: 'GET',
+            headers:{
+                Authorization: `Bearer ${userData.token}`,
+            },
+        })
+
+        const response = await res.json()
+        console.log(response)
+        return response
+    }catch(err){
+        console.log(err)
+    }   
 }

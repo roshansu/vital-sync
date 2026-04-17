@@ -5,8 +5,15 @@ import jwt from 'jsonwebtoken'
 
 const verifyUser = async(req, res, next)=>{
     try{
-        const {token} = req.cookies
+        // const {token} = req.cookies
+        const token = req.headers.authorization?.split(" ")[1] || {}
+
+        console.log(token)
+        if(!token){
+            throw new Error("Invalid token ")
+        }
         const payload = jwt.verify(token, jwtKey)
+        console.log(payload)
         const {_id} = payload
 
         // console.log(payload)

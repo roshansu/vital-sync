@@ -1,14 +1,19 @@
 import { getUserData, clearUserData } from "../lib/setLocalData";
 import { useState } from "react";
+import { userLogout } from "../api/api";
 
 const UserProfile = () => {
   const user = getUserData()
   if (!localStorage.getItem("userData")) {
     window.location.href = "/home";
   }
-  const handleLogout = ()=>{
+  const handleLogout = async ()=>{
     if(window.confirm("are sure logout")){
+      const data = await userLogout('user/logout')
+      if(data.success)
       clearUserData()
+
+      alert(data.message)
     }
     return
   }
