@@ -1,7 +1,7 @@
 import { getUserData } from "../lib/setLocalData"
 
 
-const baseApi = 'http://localhost:5000'
+const baseApi = 'https://vital-sync-ve9t.vercel.app'
 
 export const userAuth = async(route, data)=>{
     try{
