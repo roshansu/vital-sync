@@ -1,11 +1,12 @@
 import { getUserData } from "../lib/setLocalData"
 
 
-const baseApi = 'https://vital-sync-ve9t.vercel.app'
+// const baseApi = 'https://vital-sync-ve9t.vercel.app'
+const baseApi = 'http://localhost:5000'
 
 export const userAuth = async(route, data)=>{
     try{
-        const res = await fetch(`${baseApi}/api/${route}`, {
+        const res = await fetch(`${baseApi}/api${route}`, {
             method: 'POST',
             headers:{
                 "Content-Type": "application/json"
@@ -25,7 +26,7 @@ const userData = getUserData()
 
 export const userLogout = async(route)=>{
     try{
-        const res = await fetch(`${baseApi}/api/${route}`, {
+        const res = await fetch(`${baseApi}/api${route}`, {
             method: 'GET',
             headers:{
                 Authorization: `Bearer ${userData.token}`,

@@ -1,7 +1,7 @@
 import validator from 'validator'
 
 const validate = (data)=>{
-    const mandatoryField = ["email", "password", "firstName", "lastName"]
+    const mandatoryField = ["email", "password", "firstName", "lastName", "phone"]
     const isAllowed = mandatoryField.every((field)=> Object.keys(data).includes(field))
 
     if(!isAllowed){

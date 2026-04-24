@@ -1,32 +1,48 @@
-const Footer = () => {
+import { customStyles, colors } from "../../constant/style";
+
+export default function Footer() {
+  const links = ["Privacy Policy", "Terms of Service", "Security", "Support"];
+  const icons = ["share", "hub", "mail"];
+
   return (
-    <footer className="bg-slate-100 w-full py-12 px-8 border-t border-slate-200">
+    <footer
+      className="w-full py-12 px-8"
+      style={{ background: colors.surfaceContainerLow }}>
       <div className="flex flex-col md:flex-row justify-between items-center gap-6 max-w-7xl mx-auto">
+        {/* Brand */}
         <div className="flex flex-col gap-2">
-          <span className="font-['Manrope'] font-bold text-[#191c1e] text-lg">
+          <span
+            className="font-bold text-lg"
+            style={{ fontFamily: "Manrope", color: colors.onSurface }}>
             The Clinical Atelier
           </span>
-          <p className="font-['Inter'] text-sm text-slate-500">
+          <p
+            className="text-sm opacity-60"
+            style={{ fontFamily: "Inter", color: colors.onSurface }}>
             © 2024 The Clinical Atelier. Precision Serenity in Healthcare.
           </p>
         </div>
+
+        {/* Links */}
         <div className="flex flex-wrap justify-center gap-8">
-          {["Privacy Policy", "Terms of Service", "Security", "Support"].map(
-            (link) => (
-              <a
-                key={link}
-                href="#"
-                className="font-['Inter'] text-sm text-slate-500 hover:text-blue-600 transition-colors">
-                {link}
-              </a>
-            ),
-          )}
+          {links.map((link) => (
+            <a
+              key={link}
+              href="#"
+              className="text-sm opacity-60 transition-colors hover:opacity-100"
+              style={{ color: colors.onSurface }}>
+              {link}
+            </a>
+          ))}
         </div>
+
+        {/* Icons */}
         <div className="flex gap-4">
-          {["share", "hub", "mail"].map((icon) => (
+          {icons.map((icon) => (
             <button
               key={icon}
-              className="material-symbols-outlined text-slate-400 hover:text-blue-600 transition-colors">
+              className="material-symbols-outlined transition-colors hover:text-blue-600"
+              style={{ color: colors.onSurfaceVariant }}>
               {icon}
             </button>
           ))}
@@ -34,6 +50,4 @@ const Footer = () => {
       </div>
     </footer>
   );
-};
-
-export default Footer;
+}

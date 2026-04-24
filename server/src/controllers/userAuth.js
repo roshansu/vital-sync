@@ -2,6 +2,7 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { jwtKey } from '../lib/constants.js'
 import validate from '../lib/validate.js'
+import Doctor from '../models/doctor.js'
 import User from '../models/user.js'
 import redisClient from '../config/redis.js'
 
@@ -9,7 +10,7 @@ import redisClient from '../config/redis.js'
 export const register = async(req, res)=>{
     try{ 
         // console.log(req.body)
-        const {email, password, firstName, lastName} = req.body
+        const {email, password, firstName, lastName, role} = req.body
        
         validate(req.body)
 
@@ -24,20 +25,30 @@ export const register = async(req, res)=>{
 
         const user = await User.create(req.body)
 
+        if(role === 'doctor'){
+            const {specialization, qualification} = req.body
+
+             await Doctor.create({
+                specialization, qualification,
+                userId: user._id
+            })
+
+        }
+
         const token = jwt.sign({email, _id: user._id, role: "user"}, jwtKey, {expiresIn: "7d"})
         // res.cookie("token", token)
         const userData = {
             email,
             firstName,
             lastName,
-            role: isExist.role,
+            role,
             token
         }
         console.log(userData)
         res.status(200).send({message: "user registered", success: true, userData})
         
     }catch(err){
-        res.status(500).send({message: "Something went wrong", success: false, err: err.message})
+        res.status(500).send({message: err.message, success: false })
     }
 }
 
@@ -75,7 +86,7 @@ export const login = async(req, res)=>{
         res.status(200).send({message: "login success", success: true, userData})
 
     }catch(err){
-        res.status(500).send({message: "something went wrong", success: false, err: err.message})
+        res.status(500).send({message: err.message, success: false })
     }
 }
 
@@ -93,6 +104,6 @@ export const logout = async(req, res)=>{
         // res.cookie("token",null, {expiresIn: Date.now()})
         res.status(200).send({message: "logout success", success: true})
     }catch(err){
-        res.status(500).send({message: "logout failed", success: false, err: err.message})
+        res.status(500).send({message: err.message, success: false })
     }
 }
