@@ -5,7 +5,7 @@ import VitalMeter from './VitalMeter'
 import ActivityItem from './ActivityItem';
 import QuickNav from './QuickNav';
 
-const PatientDashboard = () => {
+const PatientDashboard = ({setCurrNav}) => {
   return (
     <div className="min-h-screen ml-0 font-sans" style={{ backgroundColor: colors.surface, color: colors.onSurface }}>
       <main className="p-4 md:p-8 max-w-7xl mx-auto">
@@ -21,13 +21,13 @@ const PatientDashboard = () => {
             </p>
           </div>
           <div className="flex gap-3">
-            <button 
+            <button onClick={()=>setCurrNav('doctors')}
               className="px-6 py-2.5 text-white font-bold rounded-lg shadow-lg hover:scale-[1.02] active:scale-[0.98] transition-all"
               style={{ background: `linear-gradient(to bottom right, ${colors.primary}, ${colors.primaryContainer})` }}
             >
               Book Appointment
             </button>
-            <button 
+            <button onClick={()=>setCurrNav('reports')}
               className="px-6 py-2.5 border font-bold rounded-lg transition-all"
               style={{ 
                 backgroundColor: colors.surfaceContainerLowest, 
@@ -92,7 +92,7 @@ const PatientDashboard = () => {
                       <p className="font-bold">10:30 AM</p>
                     </div>
                   </div>
-                  <button className="ml-auto px-8 py-3 bg-white font-black rounded-xl hover:opacity-90 transition-colors shadow-lg text-blue-700">
+                  <button onClick={()=>setCurrNav('appointments')} className="ml-auto px-8 py-3 bg-white font-black rounded-xl hover:opacity-90 transition-colors shadow-lg text-blue-700">
                     View Details
                   </button>
                 </div>
@@ -102,7 +102,7 @@ const PatientDashboard = () => {
             </div>
 
             {/* Vitals and Alerts */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="p-6 rounded-xl" style={{ backgroundColor: colors.surfaceContainerLowest }}>
                 <h4 className="font-bold mb-4 flex items-center gap-2">
                   <span className="material-symbols-outlined text-sm" style={{ color: colors.primary }}>monitor_heart</span>
@@ -127,7 +127,7 @@ const PatientDashboard = () => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Right Column: Activity */}
@@ -148,7 +148,7 @@ const PatientDashboard = () => {
                   title="Blood Panel" 
                   subtitle="General Wellness Profile" 
                   date="Oct 18"
-                  showDownload 
+                  
                 />
                 <ActivityItem 
                   dotColor={colors.tertiary} 
@@ -159,17 +159,9 @@ const PatientDashboard = () => {
                   isLast 
                 />
               </div>
-              <button 
-                className="w-full p-4 text-center text-xs font-bold transition-colors" 
-                style={{ backgroundColor: colors.surfaceContainerLow, color: colors.primary }}
-              >
-                View All History
-              </button>
             </div>
 
             {/* Quick Nav */}
-            <QuickNav icon="vaccines" label="Vaccination Records" />
-            <QuickNav icon="medication" label="Current Medications" />
           </div>
 
         </div>

@@ -79,13 +79,13 @@ export default function Navbar({ darkMode, setDarkMode }) {
             </div>
           }
           {/* Mobile menu toggle */}
-          <button
+          { !user && (<button
             className="md:hidden material-symbols-outlined p-2"
             onClick={() => setMenuOpen(!menuOpen)}
             style={{ color: colors.onSurface }}
           >
             {menuOpen ? "close" : "menu"}
-          </button>
+          </button>) }
         </div>
       </div>
 
@@ -107,15 +107,19 @@ export default function Navbar({ darkMode, setDarkMode }) {
             </a>
           ))}
           <div className="flex gap-2 pt-2">
+            <Link to={'/login'}>
             <button
               className="px-5 py-2 text-sm font-semibold opacity-70 hover:opacity-100 transition-opacity"
               style={{ color: colors.onSurface }}
             >
               Login
             </button>
+            </Link>
+            <Link to={'/signup'}>
             <button className="primary-gradient text-white px-6 py-2.5 rounded-lg text-sm font-semibold shadow-sm hover:opacity-90 transition-all">
               Get Started
             </button>
+            </Link>
           </div>
         </div>
       )}

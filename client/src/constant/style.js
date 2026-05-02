@@ -48,6 +48,8 @@ export const colors = {
   surfaceContainerHighest: "#e0e3e5",
   onSurface: "#191c1e",
   onSurfaceVariant: "#434655",
+    onPrimary: "eeefff",
   outlineVariant: "#c3c6d7",
   onPrimaryContainer: "#eeefff",
+
 };

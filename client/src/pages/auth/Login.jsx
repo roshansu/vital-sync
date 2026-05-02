@@ -335,7 +335,7 @@ export default function Login() {
                     cursor: "pointer",
                     fontSize: "0.95rem",
                   }}>
-                  Create Account
+                  Login
                 </button>
               </div>
             </form>

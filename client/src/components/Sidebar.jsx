@@ -4,25 +4,45 @@ import { colors } from '../constant/style';
 import {patientNav} from '../constant/constData'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
 
 
-export default function Sidebar({ activeId = "dashboard", setCurrNav }) {
+export default function Sidebar({ activeId, setCurrNav, currNav }) {
   const [active, setActive] = useState(activeId);
   const [logoutHovered, setLogoutHovered] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
   const handleNav = (id) => {
     setActive(id);
     setCurrNav(id);
   };
 
+  useEffect(()=>{
+    setActive(currNav)
+  },[currNav])
+
   return (
     <>
-      {/* <style>{`
+      <style>{`
         * { box-sizing: border-box; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: ${colors.outlineVariant}; border-radius: 4px; }
-      `}</style> */}
+      `}</style>
+
+      <button
+          onClick={() => setIsOpen(true)}
+          className="md:hidden fixed top-1 left-1 z-50 p-1 text-2xl "
+      >
+        ☰
+      </button>
+
+      {isOpen && (
+        <div
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 bg-black/40 z-40 md:hidden"
+        />
+      )}
+
 
       <aside
         style={{
@@ -30,7 +50,7 @@ export default function Sidebar({ activeId = "dashboard", setCurrNav }) {
           left: 0,
           top: 0,
           height: "100vh",
-          width: 256,
+          // width: 256,
           background: colors.surfaceContainerLow,
           display: "flex",
           flexDirection: "column",
@@ -40,6 +60,11 @@ export default function Sidebar({ activeId = "dashboard", setCurrNav }) {
           transition: "width 0.3s",
           fontFamily: "Inter",
         }}
+
+        className={`fixed top-0 left-0 h-screen w-64 bg-white z-50 shadow-lg
+        transform transition-transform duration-300
+        ${isOpen ? "translate-x-0" : "-translate-x-full"}
+        md:translate-x-0 md:static md:shadow-none`}
       >
         {/* ── Brand ─────────────────────────────────────────────────────────── */}
         <Link to={'/'}>
@@ -97,7 +122,7 @@ export default function Sidebar({ activeId = "dashboard", setCurrNav }) {
         </Link>
 
         {/* ── New Consultation CTA ──────────────────────────────────────────── */}
-        <button
+        {/* <button
           style={{
             display: "flex",
             alignItems: "center",
@@ -124,7 +149,7 @@ export default function Sidebar({ activeId = "dashboard", setCurrNav }) {
         >
           <DashIcon name="add" size={20} color={colors.onPrimary} />
           New Consultation
-        </button>
+        </button> */}
 
         {/* ── Primary Nav ───────────────────────────────────────────────────── */}
         <nav

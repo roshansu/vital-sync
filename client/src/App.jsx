@@ -8,6 +8,11 @@ import PatientPage from './pages/patient/PatientPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthRoute from './components/AuthRoute'
 
+function Doctor(){
+  return(
+    <div>Currently we are building the ui of Doctor view, I request you to please login/signup as a patient to acces the dashboard</div>
+  )
+}
 
 const App = () => {
   return (
@@ -28,6 +33,11 @@ const App = () => {
         <Route path='/patient' element={
           <ProtectedRoute role={'patient'}>
             <PatientPage/>
+          </ProtectedRoute>
+        } />
+        <Route path='/doctor' element={
+          <ProtectedRoute role={'doctor'}>
+            <Doctor/>
           </ProtectedRoute>
         } />
       </Routes>

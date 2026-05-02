@@ -4,9 +4,9 @@ import DashIcon from "../DashIcon";
 import { colors } from "../../constant/style";
 import MiniCalendar from '../MiniCalendar'
 import DoctorCard from '../DoctorCard'
-import AppointmentForm from "../form/AppointmentForm";
+import AppointmentForm from "../form/BookAppointmentForm";
 
-export default function PatientAppointment({setCurrNav}) {
+export default function PatientDoctor({setCurrNav}) {
   const [activeDept, setActiveDept] = useState("All Departments");
   const [search, setSearch]         = useState("");
   const [location, setLocation]     = useState("");
@@ -31,7 +31,6 @@ export default function PatientAppointment({setCurrNav}) {
   return (
     <>
       <style>{`
-        * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Inter', sans-serif; background: ${colors.surface}; }
         input::placeholder { color: ${colors.outline}80; }
         @keyframes fadeDown {
@@ -44,18 +43,18 @@ export default function PatientAppointment({setCurrNav}) {
 
       <main
         style={{
-          marginLeft: 256,
+          // marginLeft: 256,
           minHeight: "100vh",
           background: colors.surface,
-          padding: "48px",
+          padding: "20px",
           fontFamily: "Inter",
         }}
       >
         <div style={{ maxWidth: 1200, margin: "0 auto" }}>
 
           {/* ── Search Header ── */}
-          <section style={{ marginBottom: 48 }}>
-            <div style={{ marginBottom: 28 }}>
+          <section className="mb-12">
+            <div className="mb-4 ">
               <h2 style={{
                 fontFamily: "Manrope", fontSize: 30, fontWeight: 800,
                 letterSpacing: "-0.03em", color: colors.onSurface, marginBottom: 6,
@@ -66,18 +65,19 @@ export default function PatientAppointment({setCurrNav}) {
                 Browse our network of world-class medical professionals.
               </p>
             </div>
-
             {/* Search bar */}
             <div style={{
-              display: "flex",
-              alignItems: "center",
               background: colors.surfaceContainerLowest,
               borderRadius: 14,
               padding: "0 8px",
               boxShadow: "0 4px 24px rgba(25,28,30,0.06)",
               gap: 0,
-            }}>
-              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, padding: "0 12px" }}>
+            }}
+            className="lg:flex  items-center"
+            >
+              <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, padding: "0 12px" }}
+              
+              >
                 <DashIcon name="person_search" size={20} color={colors.primary} />
                 <input
                   value={search}
@@ -88,7 +88,7 @@ export default function PatientAppointment({setCurrNav}) {
                   style={inputBase(searchFocused)}
                 />
               </div>
-              <div style={{ width: 1, height: 32, background: `${colors.outlineVariant}50` }} />
+              {/* <div style={{ width: 1, height: 32, background: `${colors.outlineVariant}50` }} /> */}
               <div style={{ flex: 1, display: "flex", alignItems: "center", gap: 10, padding: "0 12px" }}>
                 <DashIcon name="location_on" size={20} color={colors.primary} />
                 <input
@@ -102,7 +102,7 @@ export default function PatientAppointment({setCurrNav}) {
               </div>
               <button style={{
                 background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryContainer} 100%)`,
-                color: colors.onPrimary,
+                color: "white",
                 border: "none",
                 borderRadius: 10,
                 padding: "12px 28px",

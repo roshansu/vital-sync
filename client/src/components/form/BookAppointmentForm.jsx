@@ -7,7 +7,7 @@ import ConsultTypeCard from "./ConsultTypeCard";
 import SuccessModal from "../SuccessModal";
 import { useState } from "react";
 
-export default function AppointmentForm({setCurrNav}) {
+export default function BookAppointmentForm({setCurrNav}) {
   const [consultType, setConsultType]   = useState("Online");
   const [payment, setPayment]           = useState("Online Payment");
   const [reason, setReason]             = useState("");
@@ -42,7 +42,6 @@ export default function AppointmentForm({setCurrNav}) {
         style={{
           minHeight: "100vh",
           background: colors.surface,
-          padding: "48px 24px",
           fontFamily: "Inter",
         }}
       >
