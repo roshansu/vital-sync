@@ -43,6 +43,11 @@ export default function Login() {
 
     if (!email || !password) return;
 
+      setShowModal({
+        show: true,
+        message: "Please wait...",
+        type: "pending"
+      });
     const updatedData = {
       email, password
     }

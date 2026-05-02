@@ -67,6 +67,12 @@ export default function SignUp() {
 
     if (password !== confirmPassword) return;
 
+      setShowModal({
+        show: true,
+        message: "Please wait...",
+        type: "pending"
+      });
+
     let updatedData = {
       ...formData,
       email,
