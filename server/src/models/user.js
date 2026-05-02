@@ -6,13 +6,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
     minLength: 3,
-    maxLength: 20,
+    maxLength: 40,
   },
   lastName: {
     type: String,
     required: true,
     minLength: 3,
-    maxLength: 20,
+    maxLength: 40,
   },
   email: {
     type: String,
@@ -22,14 +22,25 @@ const userSchema = new mongoose.Schema({
     trim: true,
     lowercase: true,
   },
+  phone: {
+    type: String,
+    require: true,
+    immutable: true,
+    trim: true,
+    unique: true,
+    minLength: 10,
+    maxLength: 11
+  },
+  imageUrl: String,
   password: {
     type: String,
     required: true,
   },
   role: {
     type: String,
-    enum: ["user", "admin"],
-    default: "user",
+    enum: ["user", "admin", 'doctor', 'patient'],
+    default: "patient",
+    lowercase: true
   },
 });
 

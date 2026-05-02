@@ -1,4 +1,5 @@
 
+
 export const setUserData = (data)=>{
     console.log(data)
     localStorage.setItem('userData', JSON.stringify(data))
@@ -11,5 +12,5 @@ export const getUserData = ()=>{
 
 export const clearUserData = ()=>{
     localStorage.clear()
-    window.location.href = '/'
+    navigate('/')
 }

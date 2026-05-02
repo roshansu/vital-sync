@@ -1,33 +1,35 @@
 import { useState } from "react";
-import Navbar from "../components/home/Navbar";
-import Hero from "../components/home/Hero";
-import Features from "../components/home/Features";
-import Footer from "../components/home/Footer";
-import CTA from "../components/home/Cta"
-import About from '../components/home/About'
+import Navbar from '../components/home/Navbar'
+import HeroSection from '../components/home/Hero'
+import FeaturesSection from '../components/home/Features'
+import AboutSection from '../components/home/About'
+import CTASection  from '../components/home/Cta'
+import Footer  from '../components/home/Footer'
+import { customStyles, colors } from "../constant/style";
+
 
 function Home() {
-  const [user, setUser] = useState(null);
+  const [darkMode, setDarkMode] = useState(false);
 
-  const login = () => {
-    setUser({ name: "Roshan" });
-  };
-
-  const logout = () => {
-    setUser(null);
-  };
-
- return (
-    <div className="bg-[#f7f9fb] text-[#191c1e] min-h-screen selection:bg-blue-100">
-      <Navbar />
-      <main className="pt-24">
-        <Hero />
-        <Features />
-        <About />
-        <CTA />
-      </main>
-      <Footer />
-    </div>
+  return (
+    <>
+      <style>{customStyles}</style>
+      <div
+        style={{
+          backgroundColor: colors.surface,
+          color: colors.onSurface,
+          minHeight: "100vh",
+        }}>
+        <Navbar darkMode={darkMode} setDarkMode={setDarkMode} />
+        <main style={{ paddingTop: 96 }}>
+          <HeroSection />
+          <FeaturesSection />
+          <AboutSection />
+          <CTASection />
+        </main>
+        <Footer />
+      </div>
+    </>
   );
 }
 
