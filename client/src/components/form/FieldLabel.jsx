@@ -1,20 +1,15 @@
 import { colors } from "../../constant/style";
 
-export default function FieldLabel({ children }) {
+export default function FieldLabel({ children, required = false }) {
   return (
     <label
-      style={{
-        display: "block",
-        fontSize: 10,
-        fontWeight: 700,
-        color: colors.onSurfaceVariant,
-        textTransform: "uppercase",
-        letterSpacing: "0.12em",
-        fontFamily: "Inter",
-        marginBottom: 8,
-      }}
+      className="block text-[10px] font-bold uppercase tracking-widest mb-1.5"
+      style={{ color: colors.onSurfaceVariant }}
     >
       {children}
+      {required && (
+        <span className="ml-1" style={{ color: colors.error }}>*</span>
+      )}
     </label>
   );
 }

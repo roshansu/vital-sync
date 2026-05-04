@@ -5,6 +5,7 @@ import Login from './pages/auth/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import UserProfile from './pages/User'
 import PatientPage from './pages/patient/PatientPage'
+import AdminPage from './pages/admin/AdminPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthRoute from './components/AuthRoute'
 
@@ -40,7 +41,13 @@ const App = () => {
             <Doctor/>
           </ProtectedRoute>
         } />
+        <Route path='/admin' element={
+          <ProtectedRoute role={'admin'}>
+            <AdminPage/>
+          </ProtectedRoute>
+        } />
       </Routes>
+      
     </BrowserRouter>
   )
 }

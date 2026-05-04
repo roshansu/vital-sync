@@ -8,6 +8,7 @@ import Prescriptions from '../../components/prescription/Prescriptions'
 import PrescriptionDetail from '../../components/prescription/PrescriptionDetail'
 import Reports from '../../components/reports/Reports'
 import AIHealthAssistant from '../../components/chatBot/AIHealthAssistant'
+import ProfileSettings from '../../components/form/ProfileSettings'
 
 const PatientPage = () => {
 
@@ -21,7 +22,8 @@ const PatientPage = () => {
         prescriptions: <Prescriptions setCurrNav={setCurrNav} />,
         prescriptionDetail: <PrescriptionDetail setCurrNav={setCurrNav}/>,
         reports: <Reports/>,
-        chatBot: <AIHealthAssistant/>
+        chatBot: <AIHealthAssistant/>,
+        profile: <ProfileSettings/>
     }
 
   return (

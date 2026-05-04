@@ -8,6 +8,7 @@ export const NAV_ITEMS = [
   { id: "reports",       label: "Reports",        icon: "bar_chart"         },
 ];
 
+
 export const patientNav = [
   { id: "dashboard",     label: "Dashboard",     icon: "dashboard"         },
   { id: "doctors",       label: "Doctors",        icon: "medical_services"  },

@@ -1,7 +1,7 @@
 import NavLink from './NavLink'
 import DashIcon from './DashIcon';
 import { colors } from '../constant/style';
-import {patientNav} from '../constant/constData'
+import {NAV_ITEMS} from '../constant/constData'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
@@ -161,7 +161,7 @@ export default function Sidebar({ activeId, setCurrNav, currNav }) {
             overflowY: "auto",
           }}
         >
-          {patientNav.map((item) => (
+          {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.id}
               item={item}
@@ -199,7 +199,7 @@ export default function Sidebar({ activeId, setCurrNav, currNav }) {
           }}
         >
           {/* User card */}
-          <div
+          <div onClick={()=>setCurrNav('profile')}
             style={{
               display: "flex",
               alignItems: "center",
