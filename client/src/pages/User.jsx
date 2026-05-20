@@ -1,6 +1,6 @@
 import { getUserData, clearUserData } from "../lib/setLocalData";
 import { useState } from "react";
-import { userLogout } from "../api/api";
+import { userLogout } from "../api/userAuth";
 
 const UserProfile = () => {
   const user = getUserData()

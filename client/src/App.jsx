@@ -5,14 +5,10 @@ import Login from './pages/auth/Login'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import UserProfile from './pages/User'
 import PatientPage from './pages/patient/PatientPage'
+import AdminPage from './pages/admin/AdminPage'
 import ProtectedRoute from './components/ProtectedRoute'
 import AuthRoute from './components/AuthRoute'
-
-function Doctor(){
-  return(
-    <div>Currently we are building the ui of Doctor view, I request you to please login/signup as a patient to acces the dashboard</div>
-  )
-}
+import DoctorPage from './pages/doctor/DoctorPage'
 
 const App = () => {
   return (
@@ -37,10 +33,16 @@ const App = () => {
         } />
         <Route path='/doctor' element={
           <ProtectedRoute role={'doctor'}>
-            <Doctor/>
+            <DoctorPage/>
+          </ProtectedRoute>
+        } />
+        <Route path='/admin' element={
+          <ProtectedRoute role={'admin'}>
+            <AdminPage/>
           </ProtectedRoute>
         } />
       </Routes>
+      
     </BrowserRouter>
   )
 }

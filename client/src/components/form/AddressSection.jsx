@@ -68,7 +68,7 @@ export default function AddressSection({ visible, address, setAddress }) {
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           {/* Address line */}
           <div>
-            <FieldLabel>Address Line</FieldLabel>
+            <FieldLabel required={true}>Address Line</FieldLabel>
             <TextInput
               placeholder="123 Clinical Way, Apt 4B"
               value={address.line}
@@ -79,7 +79,7 @@ export default function AddressSection({ visible, address, setAddress }) {
           {/* City + State + Pincode row */}
           <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 12 }}>
             <div>
-              <FieldLabel>City</FieldLabel>
+              <FieldLabel required={true}>City</FieldLabel>
               <TextInput
                 placeholder="New York"
                 value={address.city}
@@ -87,7 +87,7 @@ export default function AddressSection({ visible, address, setAddress }) {
               />
             </div>
             <div>
-              <FieldLabel>State</FieldLabel>
+              <FieldLabel required={true}>State</FieldLabel>
               <TextInput
                 placeholder="NY"
                 value={address.state}
@@ -95,7 +95,7 @@ export default function AddressSection({ visible, address, setAddress }) {
               />
             </div>
             <div>
-              <FieldLabel>Pincode</FieldLabel>
+              <FieldLabel required={true}>Pincode</FieldLabel>
               <TextInput
                 placeholder="10001"
                 value={address.pincode}
