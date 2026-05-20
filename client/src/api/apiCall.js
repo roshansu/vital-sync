@@ -1,4 +1,5 @@
-const BASE_URL = 'https://vital-sync-ve9t.vercel.app'
+const BASE_URL = 'https://vital-sync-ve9t.vercel.app/api'
+// 'https://vital-sync-ve9t.vercel.app'
 
 // 'http://localhost:5000/api'
 import { getGlobalSetLoading } from "../hooks/AppContext";
