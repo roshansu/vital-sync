@@ -1,11 +1,30 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { colors } from '../../constant/style';
 import StatCard from './StatCard';
 import VitalMeter from './VitalMeter'
 import ActivityItem from './ActivityItem';
 import QuickNav from './QuickNav';
+import apiCall from '../../api/apiCall';
+import { getUserData } from '../../lib/setLocalData';
+import { use } from 'react';
 
 const PatientDashboard = ({setCurrNav}) => {
+
+  const [data, setData] = useState([])
+
+  const getData =  async()=>{
+    const res = await apiCall('/patient/stats','GET')
+    console.log(res)
+    setData(res)
+  }
+
+  const user = getUserData()
+  // console.log(user)
+
+  useEffect(()=>{
+    getData()
+  },[])
+
   return (
     <div className="min-h-screen ml-0 font-sans" style={{ backgroundColor: colors.surface, color: colors.onSurface }}>
       <main className="p-4 md:p-8 max-w-7xl mx-auto">
@@ -14,7 +33,8 @@ const PatientDashboard = ({setCurrNav}) => {
         <section className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
             <h2 className="text-3xl font-extrabold tracking-tight mb-2" style={{ color: colors.onSurface }}>
-              Welcome, Julian 👋
+              Welcome, {
+            user.firstName} 👋
             </h2>
             <p style={{ color: colors.onSurfaceVariant }} className="max-w-md">
               Your health metrics are looking stable today. You have one appointment scheduled for next week.
@@ -42,9 +62,9 @@ const PatientDashboard = ({setCurrNav}) => {
 
         {/* Key Stats Row */}
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-          <StatCard icon="event" label="Upcoming Appointments" value="2" bgColor={colors.primaryFixed} iconColor={colors.primary} />
-          <StatCard icon="folder_shared" label="Total Visits" value="12" bgColor={colors.secondaryFixed} iconColor={colors.secondary} />
-          <StatCard icon="payments" label="Pending Bills" value="$150" bgColor={colors.tertiaryFixed} iconColor={colors.tertiary} />
+          <StatCard icon="event" label="Upcoming Appointments" value={data.upcomingAppointment || 'N/A'} bgColor={colors.primaryFixed} iconColor={colors.primary} />
+          <StatCard icon="folder_shared" label="Total Visits" value={data.totalVisit || 'N/A'} bgColor={colors.secondaryFixed} iconColor={colors.secondary} />
+          <StatCard icon="payments" label="Pending Bills" value={data.pendingBill || 'N/A'} bgColor={colors.tertiaryFixed} iconColor={colors.tertiary} />
         </section>
 
         {/* Main Grid */}

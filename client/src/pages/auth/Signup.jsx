@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { userAuth } from "../../api/api";
+import { userAuth } from "../../api/userAuth";
 import { Link } from "react-router-dom";
 import Field from "../../components/Field";
 import SuccessModal from "../../components/SuccessModal";

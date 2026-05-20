@@ -81,7 +81,7 @@ export default function AdminDashboard() {
           </section>
 
           {/* ── Main grid ── */}
-          <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8 items-start">
+          <section className="grid grid-cols-1  gap-6 md:gap-8 items-start">
 
             {/* ── Recent Activity (8 cols) ── */}
             <div className="lg:col-span-8 space-y-0">
@@ -171,7 +171,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* ── Today's Appointments mini-table ── */}
-              <div
+              {/* <div
                 className="mt-6 rounded-xl overflow-hidden border"
                 style={{
                   background: colors.surfaceContainerLowest,
@@ -264,7 +264,7 @@ export default function AdminDashboard() {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </div> */}
             </div>
 
             {/* ── Right sidebar (4 cols) ── */}

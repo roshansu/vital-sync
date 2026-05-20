@@ -13,23 +13,22 @@ export default function TopNav({ search, setSearch, searchFocused, setSearchFocu
       }}
     >
       {/* Left: title + search */}
-      <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0">
+      {/* <div className="flex items-center gap-4 md:gap-6 flex-1 min-w-0">
         <h2
           className="hidden lg:block font-extrabold tracking-tight text-xl flex-shrink-0"
           style={{ fontFamily: "Manrope", color: colors.onSurface }}
         >
           Dashboard
-        </h2>
+        </h2> */}
 
         {/* Search bar */}
         <div
-          className="hidden md:flex items-center gap-2 rounded-full px-4 py-1.5 transition-all"
+          className=" flex w-full lg:w-1/2 items-center gap-2 rounded-full px-4 py-1.5 transition-all"
           style={{
             background: colors.surfaceContainerLow,
             boxShadow: searchFocused
               ? `0 0 0 2px ${colors.primaryContainer}35`
               : "none",
-            width: 260,
           }}
         >
           <Icon name="search" size={17} color={colors.outline} />
@@ -43,10 +42,10 @@ export default function TopNav({ search, setSearch, searchFocused, setSearchFocu
             style={{ color: colors.onSurface, fontFamily: "Inter" }}
           />
         </div>
-      </div>
+      {/* </div> */}
 
       {/* Right: actions */}
-      <div className="flex items-center gap-3 flex-shrink-0">
+      {/* <div className="flex items-center gap-3 flex-shrink-0">
         <button
           className="relative p-2 rounded-full transition-colors"
           style={{ background: "none", border: "none", cursor: "pointer" }}
@@ -54,7 +53,6 @@ export default function TopNav({ search, setSearch, searchFocused, setSearchFocu
           onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
         >
           <Icon name="notifications" size={20} color={colors.onSurfaceVariant} />
-          {/* unread dot */}
           <span
             className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full"
             style={{ background: colors.error }}
@@ -70,7 +68,6 @@ export default function TopNav({ search, setSearch, searchFocused, setSearchFocu
           <Icon name="settings" size={20} color={colors.onSurfaceVariant} />
         </button>
 
-        {/* Avatar */}
         <div
           className="w-9 h-9 rounded-full overflow-hidden border-2 flex-shrink-0"
           style={{ borderColor: colors.surfaceContainerLowest }}
@@ -81,7 +78,7 @@ export default function TopNav({ search, setSearch, searchFocused, setSearchFocu
             className="w-full h-full object-cover"
           />
         </div>
-      </div>
+      </div> */}
     </header>
   );
 }

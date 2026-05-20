@@ -1,7 +1,7 @@
 import { colors } from "../../constant/style";
 import Icon from "../appointment/Icon";
 
-export default function Toast({ visible }) {
+export default function Toast({ visible, msg }) {
   if (!visible) return null;
   return (
     <div
@@ -14,7 +14,7 @@ export default function Toast({ visible }) {
       }}
     >
       <Icon name="check_circle" filled size={18} color="#4ade80" />
-      <span className="text-sm font-semibold">Profile saved successfully</span>
+      <span className="text-sm font-semibold">{msg}</span>
     </div>
   );
 }

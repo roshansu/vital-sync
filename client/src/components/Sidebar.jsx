@@ -1,13 +1,12 @@
 import NavLink from './NavLink'
 import DashIcon from './DashIcon';
 import { colors } from '../constant/style';
-import {NAV_ITEMS} from '../constant/constData'
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 
 
-export default function Sidebar({ activeId, setCurrNav, currNav }) {
+export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
   const [active, setActive] = useState(activeId);
   const [logoutHovered, setLogoutHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);

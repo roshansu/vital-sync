@@ -1,14 +1,17 @@
-import AdminDashboard from "../../components/admin/AdminDashboard";
+import ScheduleManagement from "../../components/schedule/ScheduleManagement";
+import DoctorProfile from "../../components/doctorProfile/DoctorProfile";
+import React, {useState} from 'react'
+import {doctortNav} from '../../constant/constData'
 import Sidebar from '../../components/Sidebar'
-import React from 'react'
-import { NAV_ITEMS } from "../../constant/constData";
-import { useState } from "react";
 
-const AdminPage = () => {
+const DoctorPage = () => {
+
     const [currNav, setCurrNav] = useState('dashboard')
 
     const components = {
-        dashboard: <AdminDashboard setCurrNav={setCurrNav} />,
+        // dashboard: <PatientDashboard setCurrNav={setCurrNav} />,
+        schedule: <ScheduleManagement setCurrNav={setCurrNav} />,
+        profile: <DoctorProfile/>
         // doctors: <PatientDoctor setCurrNav={setCurrNav} />,
         // book: <BookAppointmentForm setCurrNav={setCurrNav} />,
         // appointments: <Appointments/>,
@@ -21,12 +24,12 @@ const AdminPage = () => {
 
   return (
     <div>
-      <Sidebar NAV_ITEMS={NAV_ITEMS} activeId={currNav} currNav={currNav} setCurrNav={setCurrNav} />
+      <Sidebar NAV_ITEMS={doctortNav} activeId={currNav} currNav={currNav} setCurrNav={setCurrNav} />
         <div className='lg:ml-[260px]'>
             {components[currNav]}
         </div>
     </div>
-  )
+  ) 
 }
 
-export default AdminPage
+export default DoctorPage

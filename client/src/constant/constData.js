@@ -19,6 +19,15 @@ export const patientNav = [
 
 ]
 
+export const doctortNav = [
+  { id: "dashboard",     label: "Dashboard",     icon: "dashboard"         },
+  { id: "patients",      label: "Patients",       icon: "person"            },
+  { id: "schedule",      label: "Schedule",       icon: "list"            },
+  { id: "appointments",  label: "Appointments",   icon: "event"             },
+  { id: "chatBot",       label: "Ai Assistant",    icon: "assistant"         },
+
+]
+
 export const DOCTORS = [
   {
     id: 1,

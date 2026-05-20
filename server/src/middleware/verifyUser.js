@@ -8,12 +8,14 @@ const verifyUser = async(req, res, next)=>{
         // const {token} = req.cookies
         const token = req.headers.authorization?.split(" ")[1] || {}
 
-        console.log(token)
+        // console.log("token",token)
         if(!token){
+            console.log("error token")
             throw new Error("Invalid token ")
         }
+        console.log("object")
         const payload = jwt.verify(token, jwtKey)
-        console.log(payload)
+        console.log("payload",payload)
         const {_id} = payload
 
         // console.log(payload)
@@ -23,7 +25,7 @@ const verifyUser = async(req, res, next)=>{
         }
 
         const user = await User.findById({_id})
-        // console.log(user)
+        console.log(user)
         if(!user){
             console.log(user)
             throw new Error("User does not exist")
@@ -35,10 +37,11 @@ const verifyUser = async(req, res, next)=>{
             throw new Error("invalid token")
         }
 
-        req.result = user
+        req.user = user
         next()
 
     }catch(err){
+        console.log(err)
         res.status(500).send({message: "Invalid user", success: false, err: err.message})
     }
 }

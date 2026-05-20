@@ -5,6 +5,7 @@ import { colors } from "../../constant/style";
 import MiniCalendar from '../MiniCalendar'
 import DoctorCard from '../DoctorCard'
 import AppointmentForm from "../form/BookAppointmentForm";
+import apiCall from "../../api/apiCall";
 
 export default function PatientDoctor({setCurrNav}) {
   const [activeDept, setActiveDept] = useState("All Departments");
@@ -13,6 +14,14 @@ export default function PatientDoctor({setCurrNav}) {
   const [searchFocused, setSearchFocused]   = useState(false);
   const [locationFocused, setLocationFocused] = useState(false);
   const [showForm, setShowForm] = useState(false)
+  const [data, setDoctors] = useState([])
+
+
+  async function getData() {
+    const res = await apiCall('/patient/doctor')
+    console.log("doctor details", res)
+    setDoctors(res)
+  }
 
   const inputBase = (focused) => ({
     width: "100%",

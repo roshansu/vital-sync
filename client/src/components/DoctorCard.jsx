@@ -14,6 +14,7 @@ export default function DoctorCard({ doctor, setCurrNav }) {
   const [slotHovers, setSlotHovers]     = useState({});
   const calRef = useRef(null);
 
+  console.log(selectedSlot, selectedDate)
   // close calendar on outside click
   useEffect(() => {
     const handler = (e) => {
