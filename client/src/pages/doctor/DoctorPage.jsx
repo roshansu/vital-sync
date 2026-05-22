@@ -1,5 +1,6 @@
 import ScheduleManagement from "../../components/schedule/ScheduleManagement";
 import DoctorProfile from "../../components/doctorProfile/DoctorProfile";
+import ManageAppointments from "../../components/manageAppointment/ManageAppointments";
 import React, {useState} from 'react'
 import {doctortNav} from '../../constant/constData'
 import Sidebar from '../../components/Sidebar'
@@ -11,10 +12,10 @@ const DoctorPage = () => {
     const components = {
         // dashboard: <PatientDashboard setCurrNav={setCurrNav} />,
         schedule: <ScheduleManagement setCurrNav={setCurrNav} />,
-        profile: <DoctorProfile/>
+        profile: <DoctorProfile/>,
         // doctors: <PatientDoctor setCurrNav={setCurrNav} />,
         // book: <BookAppointmentForm setCurrNav={setCurrNav} />,
-        // appointments: <Appointments/>,
+        appointments: <ManageAppointments/>,
         // prescriptions: <Prescriptions setCurrNav={setCurrNav} />,
         // prescriptionDetail: <PrescriptionDetail setCurrNav={setCurrNav}/>,
         // reports: <Reports/>,

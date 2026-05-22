@@ -18,7 +18,7 @@ const PatientPage = () => {
     const components = {
         dashboard: <PatientDashboard setCurrNav={setCurrNav} />,
         doctors: <PatientDoctor setCurrNav={setCurrNav} />,
-        book: <BookAppointmentForm setCurrNav={setCurrNav} />,
+        // book: <BookAppointmentForm setCurrNav={setCurrNav} />,
         appointments: <Appointments/>,
         prescriptions: <Prescriptions setCurrNav={setCurrNav} />,
         prescriptionDetail: <PrescriptionDetail setCurrNav={setCurrNav}/>,

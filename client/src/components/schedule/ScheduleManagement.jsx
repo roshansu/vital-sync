@@ -25,7 +25,7 @@ export default function ScheduleManagement() {
   const [slotDuration, setSlotDuration] = useState("30 Minutes");
   const [loading, setLoading] = useState(false)
 
-  console.log("slotDuration", slotDuration)
+  // console.log("slotDuration", slotDuration)
   // console.log(activeDays, shiftStart, shiftEnd, slotDuration)
   // Consultation settings
   const [consultFee,  setConsultFee]  = useState("120");
@@ -38,7 +38,7 @@ export default function ScheduleManagement() {
 
   // Off days
   const [offDays, setOffDays] = useState([]);
-  console.log("offf",offDays)
+  // console.log("offf",offDays)
   // UI
   const [showToast,     setShowToast]     = useState({
     visible: false,
@@ -123,7 +123,7 @@ export default function ScheduleManagement() {
 
   setTimeout(() => setShowToast({
       visible: false,
-    }), 3000)
+    }), 4000)
 
     setSLotId(res?.slot?._id)
     
@@ -263,7 +263,7 @@ export default function ScheduleManagement() {
                         boxShadow: `0 0 0 1px ${colors.outlineVariant}30`,
                       }}
                     >
-                      {["15 Minutes", "30 Minutes", "1 Hour"].map((o) => (
+                      {["15 Minutes", "30 Minutes", "60 minutes"].map((o) => (
                         <option key={o}>{o}</option>
                       ))}
                     </select>

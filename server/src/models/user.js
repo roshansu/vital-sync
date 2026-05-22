@@ -8,6 +8,10 @@ const userSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 40,
   },
+  bio:{
+    type: String,
+    maxLength: 500
+  },
   lastName: {
     type: String,
     required: true,
@@ -42,8 +46,8 @@ const userSchema = new mongoose.Schema({
     default: "patient",
     lowercase: true
   },
-});
+}, {timestamps: true});
 
-const User = mongoose.model("user", userSchema);
+const User = mongoose.model("User", userSchema);
 
 export default User;

@@ -7,7 +7,7 @@ import ConsultTypeCard from "./ConsultTypeCard";
 import SuccessModal from "../SuccessModal";
 import { useState } from "react";
 
-export default function BookAppointmentForm({setCurrNav}) {
+export default function BookAppointmentForm({setCurrNav, setShowForm}) {
   const [consultType, setConsultType]   = useState("Online");
   const [payment, setPayment]           = useState("Online Payment");
   const [reason, setReason]             = useState("");
@@ -30,28 +30,29 @@ export default function BookAppointmentForm({setCurrNav}) {
   const isHomeVisit = consultType === "Home Visit";
 
   return (
-    <div>
-      <style>{`
+    <div 
+      className="fixed p-10 inset-0 z-[100] flex items-center justify-center "
+      style={{ background: "rgba(25,28,30,0.5)", backdropFilter: "blur(8px)" }}
+    >
+      {/* <style>{`
         
         body { font-family: 'Inter', sans-serif; background: ${colors.surface}; }
         input::placeholder, textarea::placeholder { color: ${colors.outline}70; }
         textarea { resize: none; }
-      `}</style>
+      `}</style> */}
 
       <main
-        style={{
-          minHeight: "100vh",
-          background: colors.surface,
-          fontFamily: "Inter",
-        }}
+        className="w-full max-h-[90%] max-w-md rounded-2xl overflow-scroll shadow-2xl"
+        style={{ background: colors.surfaceContainerLowest, animation: "popIn 0.25s cubic-bezier(0.34,1.56,0.64,1)" }}
+        // onClick={(e) => e.stopPropagation()}
       >
         <div
           style={{
-            maxWidth: 680,
+            // maxWidth: ,
             margin: "0 auto",
             background: colors.surfaceContainerLowest,
             borderRadius: 20,
-            padding: 40,
+            padding: 20,
             boxShadow: "0 32px 64px -12px rgba(25,28,30,0.07)",
           }}
         >
@@ -60,7 +61,7 @@ export default function BookAppointmentForm({setCurrNav}) {
             <h1
               style={{
                 fontFamily: "Manrope",
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
                 color: colors.onSurface,
@@ -79,20 +80,20 @@ export default function BookAppointmentForm({setCurrNav}) {
             style={{
               background: colors.surfaceContainerLow,
               borderRadius: 16,
-              padding: 28,
+              padding: 20,
               display: "flex",
-              gap: 28,
+              // gap: 20,
               alignItems: "flex-start",
-              marginBottom: 36,
+              marginBottom: 20,
               flexWrap: "wrap",
             }}
           >
             {/* Doctor image */}
-            <div style={{ position: "relative", flexShrink: 0 }}>
+            {/* <div style={{ position: "relative", flexShrink: 0 }}>
               <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEqkO_T0LctAPPJ3MV5eNp0sZHe6B_KxC0CMnIUEydVqvIiuPuLFjlt6nOTnkTDnsdd3hBp2URt9jDxjROVl3L6-gK0Ak0Y4OTs05xHYzB4D9IuRpDd8mwKbwOjaUMKYWIlgHtOPZI_rPuGwYOiAa1HNyjhQkrJqZau6oTemoGzZgShpy8G0WTUpm9DLUGJmsiFT8GLg5jtxLY2RVBBMFRVQwvgi9YGfbHx45PBvoGmG22vCQ_rlWSvi1Mek8hceuwrWz0HCWsYDYo"
                 alt="Dr. Marcus Thorne"
-                style={{ width: 88, height: 88, borderRadius: 14, objectFit: "cover" }}
+                style={{ width: 40, height: 40, borderRadius: 14, objectFit: "cover" }}
               />
               <div
                 style={{
@@ -105,9 +106,9 @@ export default function BookAppointmentForm({setCurrNav}) {
                   display: "flex",
                 }}
               >
-                <DashIcon name="verified" filled size={14} color={colors.onPrimary} />
+                <DashIcon name="verified" filled size={8} color={colors.onPrimary} />
               </div>
-            </div>
+            </div> */}
 
             {/* Doctor info */}
             <div style={{ flex: 1, minWidth: 200 }}>
@@ -126,7 +127,7 @@ export default function BookAppointmentForm({setCurrNav}) {
                     style={{
                       fontFamily: "Manrope",
                       fontWeight: 700,
-                      fontSize: 20,
+                      fontSize: 14,
                       color: colors.onSurface,
                       letterSpacing: "-0.02em",
                       marginBottom: 4,
@@ -136,7 +137,7 @@ export default function BookAppointmentForm({setCurrNav}) {
                   </h2>
                   <p
                     style={{
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: 700,
                       color: colors.primary,
                       textTransform: "uppercase",
@@ -162,8 +163,8 @@ export default function BookAppointmentForm({setCurrNav}) {
                   <p
                     style={{
                       fontFamily: "Manrope",
-                      fontWeight: 800,
-                      fontSize: 22,
+                      fontWeight: 500,
+                      fontSize: 14,
                       color: colors.onSurface,
                     }}
                   >
@@ -365,7 +366,7 @@ export default function BookAppointmentForm({setCurrNav}) {
             <button
               onMouseEnter={() => setCancelHovered(true)}
               onMouseLeave={() => setCancelHovered(false)}
-              onClick={()=>setCurrNav("appointments")}
+              onClick={()=>setShowForm(false)}
               style={{
                 padding: "16px 28px",
                 background: cancelHovered

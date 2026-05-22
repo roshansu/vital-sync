@@ -15,8 +15,17 @@ export const addSlot = async (req, res) => {
       slotId,
     } = req.body;
 
-    const doctorId = req.user?._id;
+    console.log("slot duration",slotDuration)
 
+    if(!req.doctor.isApproved){
+      return res.status(401).json({
+        success: false,
+        message: "Please update your profile first, add license no. slot not added",
+      });
+    }
+
+    const doctorId = req.doctor?._id;
+    const userId = req.user._id
     console.log("slotId",slotId)
     if (!doctorId) {
       return res.status(401).json({
@@ -62,6 +71,7 @@ export const addSlot = async (req, res) => {
 
     const slotData = {
       doctor: doctorId,
+      userId,
       activeDays,
       offDays: offDays || [],
       shiftStart,
@@ -124,16 +134,18 @@ export const addSlot = async (req, res) => {
 
 export const getMySlot = async (req, res) => {
   try {
-    const doctorId = req.user?._id;
+    const userId = req.user?._id;
 
-    if (!doctorId) {
+    if (!userId) {
       return res.status(401).json({
         success: false,
         message: "Unauthorized doctor",
       });
     }
 
-    const slot = await Slot.findOne({ doctor: doctorId });
+    const slot = await Slot.findOne({ userId });
+
+    console.log(slot)
 
     if (!slot) {
       return res.status(404).json({

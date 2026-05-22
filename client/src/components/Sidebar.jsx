@@ -4,6 +4,7 @@ import { colors } from '../constant/style';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
+import {clearUserData} from '../lib/setLocalData'
 
 
 export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
@@ -14,6 +15,12 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
     setActive(id);
     setCurrNav(id);
   };
+
+  function handleLogout(){
+    if(window.confirm('Are sure logout?')){
+     clearUserData()
+    }
+  }
 
   useEffect(()=>{
     setActive(currNav)
@@ -253,9 +260,8 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
           </div>
 
           {/* Logout */}
-          <a
-            href="#"
-            onClick={(e) => e.preventDefault()}
+          <div
+            onClick={handleLogout}
             onMouseEnter={() => setLogoutHovered(true)}
             onMouseLeave={() => setLogoutHovered(false)}
             style={{
@@ -294,7 +300,7 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
               color={logoutHovered ? colors.error : "#64748b"}
               style={{ opacity: logoutHovered ? 0.7 : 0.3 }}
             />
-          </a>
+          </div>
         </div>
       </aside>
     </>

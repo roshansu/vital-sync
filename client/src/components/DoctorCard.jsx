@@ -5,8 +5,41 @@ import MiniCalendar from './MiniCalendar'
 import { DEPARTMENTS, DAYS, MONTHS, DOCTORS } from "./../constant/constData";
 
 
+function toMinutes(timeStr) {
+  const [h, m] = timeStr.split(":").map(Number);
+  return h * 60 + m;
+}
 
-export default function DoctorCard({ doctor, setCurrNav }) {
+function padZ(n) {
+  return String(n).padStart(2, "0");
+}
+
+
+
+function computeAvailableSlots(schedule) {
+  const start    = toMinutes(schedule.shiftStart);
+  const end      = toMinutes(schedule.shiftEnd);
+  const duration = Number(schedule.slotDuration);
+  // console.log(start, end, duration)
+  const breaks   = (schedule.breakTime || []).map((b) => ({
+    s: toMinutes(b.start),
+    e: toMinutes(b.end),
+  }));
+
+  const slots = [];
+  for (let t = start; t + duration <= end; t += duration) {
+    const inBreak = breaks.some((b) => t < b.e && t + duration > b.s);
+    if (!inBreak) {
+      const hh = String(Math.floor(t / 60)).padStart(2, "0");
+      const mm = String(t % 60).padStart(2, "0");
+      slots.push(`${hh}:${mm}`);
+    }
+  }
+  return slots;
+}
+
+
+export default function DoctorCard({ doctor, setCurrNav, schedule, setShowForm }) {
   const [calOpen, setCalOpen]       = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -14,8 +47,12 @@ export default function DoctorCard({ doctor, setCurrNav }) {
   const [slotHovers, setSlotHovers]     = useState({});
   const calRef = useRef(null);
 
-  console.log(selectedSlot, selectedDate)
+  // console.log(selectedSlot, selectedDate)
   // close calendar on outside click
+
+  const slotsForDate = schedule ? computeAvailableSlots(schedule) : [];
+
+  // console.log("schedule",schedule)
   useEffect(() => {
     const handler = (e) => {
       if (calRef.current && !calRef.current.contains(e.target)) setCalOpen(false);
@@ -24,9 +61,9 @@ export default function DoctorCard({ doctor, setCurrNav }) {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const slotsForDate = selectedDate
-    ? doctor.slots[selectedDate.getDay()] || []
-    : [];
+  // const slotsForDate = selectedDate
+  //   ? doctor.activeDays[selectedDate.getDay()] || []
+  //   : [];
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
@@ -53,14 +90,14 @@ export default function DoctorCard({ doctor, setCurrNav }) {
       {/* ── Header ── */}
       <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
         <img
-          src={doctor.img}
-          alt={doctor.name}
+          src={doctor?.doctor?.userId?.imageUrl}
+          alt={doctor.doctor.userId.firstName}
           style={{ width: 80, height: 80, borderRadius: 12, objectFit: "cover", flexShrink: 0 }}
         />
         <div style={{ flex: 1, minWidth: 0 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 4 }}>
             <h3 style={{ fontWeight: 700, fontSize: 16, color: colors.onSurface, fontFamily: "Manrope", lineHeight: 1.2 }}>
-              {doctor.name}
+              {doctor.doctor.userId.firstName + doctor.doctor.userId.lastName}
             </h3>
             <div style={{
               display: "flex", alignItems: "center", gap: 3,
@@ -68,13 +105,13 @@ export default function DoctorCard({ doctor, setCurrNav }) {
               padding: "2px 8px", flexShrink: 0,
             }}>
               <DashIcon name="star" filled size={13} color={colors.onTertiaryFixedVariant} />
-              <span style={{ fontSize: 11, fontWeight: 700, color: colors.onTertiaryFixedVariant }}>{doctor.rating}</span>
+              <span style={{ fontSize: 11, fontWeight: 700, color: colors.onTertiaryFixedVariant }}>{4}</span>
             </div>
           </div>
-          <p style={{ fontSize: 13, fontWeight: 500, color: colors.primary, marginBottom: 6 }}>{doctor.specialty}</p>
+          <p style={{ fontSize: 13, fontWeight: 500, color: colors.primary, marginBottom: 6 }}>{doctor.doctor.specialization[0]}</p>
           <div style={{ display: "flex", alignItems: "center", gap: 6, color: colors.onSurfaceVariant }}>
             <DashIcon name="work" size={14} color={colors.onSurfaceVariant} />
-            <span style={{ fontSize: 11 }}>{doctor.experience}</span>
+            <span style={{ fontSize: 11 }}>{doctor?.doctor?.experience}</span>
           </div>
         </div>
       </div>
@@ -130,9 +167,9 @@ export default function DoctorCard({ doctor, setCurrNav }) {
             }}
           >
             <MiniCalendar
-              selectedDate={selectedDate}
+              selectedDate={selectedDate} 
               onSelect={(d) => { handleDateSelect(d); setCalOpen(false); }}
-              slots={doctor.slots}
+              schedule={schedule}
             />
           </div>
         )}
@@ -187,9 +224,9 @@ export default function DoctorCard({ doctor, setCurrNav }) {
         )}
 
         {/* Default slots (no date selected) */}
-        {!selectedDate && (
+        {/* {!selectedDate && (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
-            {(doctor.slots[new Date().getDay()] || Object.values(doctor.slots)[0] || []).slice(0, 3).map((slot) => {
+            {(doctor.activeDays[new Date().getDay()] || Object.values(doctor.activeDays)[0] || []).slice(0, 3).map((slot) => {
               const isHov = slotHovers[slot];
               return (
                 <button
@@ -215,14 +252,14 @@ export default function DoctorCard({ doctor, setCurrNav }) {
               );
             })}
           </div>
-        )}
+        )} */}
       </div>
 
       {/* ── Book button ── */}
       <button
         onMouseEnter={() => setBookHovered(true)}
         onMouseLeave={() => setBookHovered(false)}
-        onClick={()=>setCurrNav('book')}
+        onClick={()=>setShowForm(true)}
         style={{
           width: "100%",
           padding: "14px",

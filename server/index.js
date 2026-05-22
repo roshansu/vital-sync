@@ -9,11 +9,13 @@ import patientPrescriptionRoute from "./src/routers/patient/patientPrescriptionR
 import doctorRoute from "./src/routers/doctor.js/doctorRoute.js";
 import redisClient from "./src/config/redis.js";
 import cors from 'cors'
+import doctorProfileRoute from "./src/routers/doctor.js/doctorProfileRoute.js";
 
 const app = e();
 const PORT = 5000;
 
-app.use(e.json());
+app.use(e.json({ limit: '10mb', type: 'application/json' }));
+app.use(e.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors())
 app.use(cookieParser());
 
@@ -25,7 +27,7 @@ app.use('/api/patient/doctor', patientDoctoRouter)
 
 
 app.use('/api/doctor', doctorRoute)
-
+app.use('/api/doctor/profile', doctorProfileRoute)
 
 const initialize = async () => {
   try {
