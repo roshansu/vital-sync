@@ -3,11 +3,11 @@ import Icon from "../appointment/Icon";
 
 export default function PatientAvatar({ appt }) {
 
-  console.log(appt)
-  const initials = appt.patient.split(" ").map((w) => w[0]).slice(0, 2).join("");
+  // console.log(appt)
+  const initials = appt.patient.firstName.split(" ").map((w) => w[0]).slice(0, 2).join("");
   return (
     <div className="relative flex-shrink-0">
-      {appt.img ? (
+      {appt.patient.imageUrl ? (
         <img
           src={appt.img}
           alt={appt.patient}
@@ -25,12 +25,12 @@ export default function PatientAvatar({ appt }) {
           {initials}
         </div>
       )}
-      <div
+      {/* <div
         className="absolute -bottom-1 -right-1 p-1 rounded-full shadow-sm"
         style={{ background: colors.surfaceContainerLowest }}
       >
         <Icon name={appt.typeIcon} size={14} color={appt.typeColor} />
-      </div>
+      </div> */}
     </div>
   );
 }

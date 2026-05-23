@@ -5,6 +5,9 @@ import Icon from "./Icon";
 export default function AppointmentCard({ appt, onCancel }) {
   const [cancelConfirm, setCancelConfirm] = useState(false);
 
+  const date = new Date(appt.date)
+  const formatDate = date.toDateString()
+
   return (
     <div
       className="rounded-xl p-6 border transition-all duration-200 group"
@@ -23,8 +26,8 @@ export default function AppointmentCard({ appt, onCancel }) {
       <div className="lg:flex justify-between items-start mb-6">
         <div className="flex gap-4">
           <img
-            src={appt.img}
-            alt={appt.name}
+            src={appt.doctorId.userId.imageUrl}
+            alt={appt.doctorId.userId.firstName+' '+appt.doctorId.userId.lastName}
             className="w-14 h-14 rounded-lg object-cover"
           />
           <div>
@@ -32,14 +35,15 @@ export default function AppointmentCard({ appt, onCancel }) {
               className="font-bold lg:text-lg leading-tight"
               style={{ fontFamily: "Manrope", color: colors.onSurface }}
             >
-              {appt.name}
+              {appt.doctorId.userId.firstName+' '+appt.doctorId.userId.lastName}
             </h3>
             <p
               className="text-sm font-medium mt-0.5"
               style={{ color: colors.primaryContainer }}
             >
-              {appt.specialty}
+              {appt.doctorId.specialization}
             </p>
+            <div className="lg:flex items-center fap-2">
             <div className="flex items-center gap-1.5 mt-2">
               <Icon
                 name="location_on"
@@ -47,10 +51,23 @@ export default function AppointmentCard({ appt, onCancel }) {
                 className="text-slate-400"
                 style={{ color: "#94a3b8" }}
               />
-              <span className="text-xs" style={{ color: "#64748b" }}>
-                {appt.location}
+              <span className="" style={{ color: "#64748b" }}>
+                {appt.type}
               </span>
             </div>
+
+            <div className="flex items-center ml-4 gap-1.5 mt-2">
+              <Icon
+                name="phone"
+                size={14}
+                className="text-slate-400"
+                style={{ color: "#94a3b8" }}
+              />
+              <span className="" style={{ color: "#64748b" }}>
+                {appt.doctorId.userId.phone}
+              </span>
+            </div>
+          </div>
           </div>
         </div>
 
@@ -76,7 +93,7 @@ export default function AppointmentCard({ appt, onCancel }) {
         }}
       >
         {[
-          { icon: "calendar_month", label: "Date", value: appt.date },
+          { icon: "calendar_month", label: "Date", value: formatDate },
           { icon: "schedule",       label: "Time", value: appt.time },
         ].map(({ icon, label, value }) => (
           <div key={label} className="flex items-center gap-3">
@@ -117,7 +134,7 @@ export default function AppointmentCard({ appt, onCancel }) {
             className="text-lg font-bold"
             style={{ fontFamily: "Manrope", color: colors.onSurface }}
           >
-            {appt.fee}
+            ${appt.fee}
           </span>
         </div>
 
@@ -160,7 +177,7 @@ export default function AppointmentCard({ appt, onCancel }) {
           )}
 
           {/* View Details */}
-          <button
+          {/* <button
             className="px-4 py-2 text-xs font-bold rounded-lg transition-opacity hover:opacity-90"
             style={{
               background: colors.primary,
@@ -169,7 +186,7 @@ export default function AppointmentCard({ appt, onCancel }) {
             }}
           >
             View Details
-          </button>
+          </button> */}
         </div>
       </div>
     </div>

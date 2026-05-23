@@ -4,6 +4,9 @@ import ConfirmDialog from './ConfirmDialog'
 import RescheduleModal from './RescheduleModal'
 import { colors } from '../../constant/style';
 import Icon from '../appointment/Icon';
+import apiCall from '../../api/apiCall';
+import LoadingSpinner from '../LoadingSpinner';
+
 
 
 const INITIAL_APPOINTMENTS = [
@@ -74,17 +77,36 @@ const INITIAL_APPOINTMENTS = [
   },
 ];
 
-const STATUS_TABS = ["All", "Pending", "Approved", "Completed", "Rejected"];
+const STATUS_TABS = ["All", "pending", "approved", "completed", "rejected"];
 
 
 export default function ManageAppointments() {
-  const [appointments, setAppointments] = useState(INITIAL_APPOINTMENTS);
+  const [appointments, setAppointments] = useState([]);
   const [activeTab,    setActiveTab]    = useState("All");
   const [rescheduleAppt, setRescheduleAppt] = useState(null);
   const [confirm,        setConfirm]        = useState(null);
   const [visible,        setVisible]        = useState(false);
-
+  const [loading, setLoading] = useState(true)
+  const [data, setData] = useState([])
   // Stagger-in animation on mount
+
+    async function getData() {
+        setLoading(true)
+        try{
+            const res = await apiCall('/doctor/appointment', "GET")
+            setAppointments(res.data)
+        }catch(err){
+            setLoading(false)
+        }
+        setLoading(false)
+
+    }
+
+
+    useEffect(()=>{
+        getData()
+    }, [])
+
   useEffect(() => {
     const t = setTimeout(() => setVisible(true), 50);
     return () => clearTimeout(t);
@@ -97,20 +119,22 @@ export default function ManageAppointments() {
   // ── Status update helpers ──
   const updateStatus = (id, status) =>
     setAppointments((prev) =>
-      prev.map((a) => (a.id === id ? { ...a, status } : a))
+      prev.map((a) => (a._id === id ? { ...a, status } : a))
     );
 
   const handleApprove  = (appt) =>
-    setConfirm({ type: "approve",  appt, message: `Approve appointment for ${appt.patient}?`, label: "Approve" });
+    setConfirm({ type: "approve",  appt, message: `Approve appointment for ${appt.patient.firstName+" "+appt.patient.lastName}?`, label: "approve" });
   const handleReject   = (appt) =>
-    setConfirm({ type: "reject",   appt, message: `Reject appointment for ${appt.patient}? This will notify the patient.`, label: "Reject", danger: true });
+    setConfirm({ type: "reject",   appt, message: `Reject appointment for ${appt.patient.firstName+" "+appt.patient.lastName}? This will notify the patient.`, label: "reject", danger: true });
   const handleComplete = (appt) =>
-    setConfirm({ type: "complete", appt, message: `Mark ${appt.patient}'s appointment as completed?`, label: "Complete" });
+    setConfirm({ type: "complete", appt, message: `Mark ${appt.patient.firstName+" "+appt.patient.lastName}s appointment as completed?`, label: "complete" });
 
-  const handleConfirm = () => {
+  const handleConfirm = async() => {
     if (!confirm) return;
-    const map = { approve: "Approved", reject: "Rejected", complete: "Completed" };
-    updateStatus(confirm.appt.id, map[confirm.type]);
+    const map = { approve: "approved", reject: "rejected", complete: "completed" };
+    const res = await apiCall(`/doctor/appointment/${map[confirm.type]}`, "PATCH", {id: confirm.appt._id})
+    console.log(confirm.appt._id, map[confirm.type])
+    updateStatus(confirm.appt._id, map[confirm.type]);
     setConfirm(null);
   };
 
@@ -118,7 +142,7 @@ export default function ManageAppointments() {
     const formatted = `${date} · ${time}`;
     setAppointments((prev) =>
       prev.map((a) =>
-        a.id === rescheduleAppt.id
+        a._id === rescheduleAppt._id
           ? { ...a, date: date.replace(/-/g, "/"), time }
           : a
       )
@@ -132,6 +156,8 @@ export default function ManageAppointments() {
       : appointments.filter((a) => a.status === tab).length;
     return acc;
   }, {});
+
+  if(loading) return <LoadingSpinner/>
 
   return (
     <>
@@ -243,7 +269,7 @@ export default function ManageAppointments() {
             <div className="space-y-3 md:space-y-4">
               {filtered.map((appt, idx) => (
                 <div
-                  key={appt.id}
+                  key={appt._id}
                   style={{
                     opacity: visible ? 1 : 0,
                     transform: visible ? "translateY(0)" : "translateY(20px)",

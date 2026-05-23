@@ -4,9 +4,9 @@ import DashIcon from "../DashIcon";
 import { colors } from "../../constant/style";
 import MiniCalendar from '../MiniCalendar'
 import DoctorCard from '../DoctorCard'
-import AppointmentForm from "../form/BookAppointmentForm";
 import apiCall from "../../api/apiCall";
 import LoadingSpinner from "../LoadingSpinner";
+import NoData from '../NoData'
 
 export default function PatientDoctor({setCurrNav}) {
   const [activeDept, setActiveDept] = useState("All Departments");
@@ -17,19 +17,21 @@ export default function PatientDoctor({setCurrNav}) {
   const [showForm, setShowForm] = useState(false)
   const [data, setDoctors] = useState([])
   const [loading, setLoading] = useState(true)
-
+  const [docDetails, setDocDetails] = useState([])
 
   async function getData() {
     setLoading(true)
     const res = await apiCall('/patient/doctor', "GET")
     console.log("doctor details", res)
-    setDoctors(res.data)
+    setDoctors(res?.data || [])
     setLoading(false)
   }
 
   useEffect(()=>{
     getData()
   },[])
+
+  
 
   const inputBase = (focused) => ({
     width: "100%",
@@ -182,15 +184,13 @@ export default function PatientDoctor({setCurrNav}) {
             gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
             gap: 28,
           }}>
-            {data.map((doc) => (
-              <DoctorCard key={doc._id} setShowForm={setShowForm} schedule = {doc} setCurrNav={setCurrNav} doctor={doc} />
-            ))}
+            { data.length>0 ?  data.map((doc) => (
+              <DoctorCard setDocDetails={setDocDetails} slotId={doc._id} key={doc._id} setShowForm={setShowForm} schedule = {doc} setCurrNav={setCurrNav} doctor={doc} />
+            )): <NoData title="No doctor available at this time!" /> }
           </section>
         </div>
 
-            {
-              (showForm && <AppointmentForm setShowForm={setShowForm}/>)
-            }
+
 
       </main>
 

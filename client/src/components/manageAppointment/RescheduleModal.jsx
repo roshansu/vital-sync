@@ -52,7 +52,7 @@ export default function RescheduleModal({ appointment, onClose, onConfirm }) {
             <p className="text-xs mt-1" style={{ color: colors.onSurfaceVariant }}>
               Adjust slot for{" "}
               <span className="font-bold" style={{ color: colors.primary }}>
-                {appointment.patient}
+                {appointment.patient.firstName+" "+appointment.patient.lastName}
               </span>
             </p>
           </div>

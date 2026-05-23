@@ -6,10 +6,11 @@ import patientRoute from "./src/routers/patient/patientRoute.js";
 import patientAppointmentRoute from "./src/routers/patient/patientAppointmentRoute.js";
 import patientDoctoRouter from "./src/routers/patient/patientDoctorRoute.js";
 import patientPrescriptionRoute from "./src/routers/patient/patientPrescriptionRouter.js";
-import doctorRoute from "./src/routers/doctor.js/doctorRoute.js";
+import doctorRoute from "./src/routers/doctor/doctorRoute.js";
 import redisClient from "./src/config/redis.js";
 import cors from 'cors'
-import doctorProfileRoute from "./src/routers/doctor.js/doctorProfileRoute.js";
+import doctorProfileRoute from "./src/routers/doctor/doctorProfileRoute.js";
+import doctorAppointmentRoute from "./src/routers/doctor/doctorAppoitmentRoute.js";
 
 const app = e();
 const PORT = 5000;
@@ -28,6 +29,8 @@ app.use('/api/patient/doctor', patientDoctoRouter)
 
 app.use('/api/doctor', doctorRoute)
 app.use('/api/doctor/profile', doctorProfileRoute)
+
+app.use('/api/doctor/appointment', doctorAppointmentRoute)
 
 const initialize = async () => {
   try {

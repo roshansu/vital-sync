@@ -19,6 +19,21 @@ const patientStatsSchema = new mongoose.Schema({
     pendingBill: Number,
 
     totalBill: Number,
+    nextAppointment: {
+        name: String,
+        date: String,
+        time: String,
+        imageUrl: String,
+        specialization: String,
+        doctorId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Doctor'
+        },
+        userId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User'
+        }
+    },
 
     recentActivity: {
 
@@ -27,8 +42,10 @@ const patientStatsSchema = new mongoose.Schema({
                 title: String,
                 id: {
                     type: mongoose.Schema.Types.ObjectId,
-                    ref: 'PatientPrescription'
-                }
+                    ref: 'Prescription'
+                },
+                date: String,
+                subTitle: String
             }
         ],
 
@@ -36,9 +53,11 @@ const patientStatsSchema = new mongoose.Schema({
             {
                 title: String,
                 id: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    ref: 'PatientReport'
-                }
+                    type: String
+                    // type: mongoose.Schema.Types.ObjectId,
+                    // ref: 'PatientReport'
+                },
+                subTitle: String
             }
         ],
 
@@ -48,7 +67,8 @@ const patientStatsSchema = new mongoose.Schema({
                 id: {
                     type: mongoose.Schema.Types.ObjectId,
                     ref: 'Appointment'
-                }
+                }, 
+                subTitle: String
             }
         ]
     }

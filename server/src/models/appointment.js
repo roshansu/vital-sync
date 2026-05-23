@@ -8,23 +8,29 @@ const appointmentSchema = new mongoose.Schema({
         required: true
     },
 
-    doctor: {
+    doctorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Doctor",
+        required: true
+    },
+
+    userId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
 
-    appointmentDate: {
+    date: {
         type: Date,
         required: true
     },
 
-    appointmentTime: {
+    time: {
         type: String,
         required: true
     },
 
-    appointmentType: {
+    type: {
         type: String,
         enum: ["online", "offline"],
         default: "offline"
@@ -62,10 +68,15 @@ const appointmentSchema = new mongoose.Schema({
         enum: ["pending", "paid"],
         default: "pending"
     },
+    paymentType:{
+        type: String,
+        enum: ["online", "offline"],
+        default: "online"        
+    },
 
-    amount: {
-        type: Number,
-        default: 0
+    fee: {
+        type: String,
+        default: "N/A"
     },
 
     prescription: {

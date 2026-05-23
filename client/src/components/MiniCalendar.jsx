@@ -186,27 +186,7 @@ function toDateKey(year, month, day) {
  * Compute bookable slots for a given schedule object.
  * Returns an array of "HH:MM" strings.
  */
-function computeAvailableSlots(schedule) {
-  const start    = toMinutes(schedule.shiftStart);
-  const end      = toMinutes(schedule.shiftEnd);
-  const duration = Number(schedule.slotDuration);
-  // console.log(start, end, duration)
-  const breaks   = (schedule.breakTime || []).map((b) => ({
-    s: toMinutes(b.start),
-    e: toMinutes(b.end),
-  }));
 
-  const slots = [];
-  for (let t = start; t + duration <= end; t += duration) {
-    const inBreak = breaks.some((b) => t < b.e && t + duration > b.s);
-    if (!inBreak) {
-      const hh = String(Math.floor(t / 60)).padStart(2, "0");
-      const mm = String(t % 60).padStart(2, "0");
-      slots.push(`${hh}:${mm}`);
-    }
-  }
-  return slots;
-}
 
 // ─── component ───────────────────────────────────────────────────────────────
 /**
@@ -243,7 +223,6 @@ export default function MiniCalendar({ schedule, selectedDate, onSelect }) {
   const offDaySet = new Set(schedule?.offDays ?? []);
 
   // Available slot times (same every working day)
-  const availableSlots = schedule ? computeAvailableSlots(schedule) : [];
 
   // console.log(availableSlots)
 
@@ -404,7 +383,7 @@ export default function MiniCalendar({ schedule, selectedDate, onSelect }) {
               onClick={() => clickable && onSelect(new Date(year, month, d))}
               title={
                 off     ? "Off day"
-                : avail ? `${availableSlots.length} slot(s) available`
+                : avail ? ` slot(s) available`
                 : !active ? "Not a working day"
                 : past  ? "Past date"
                 : undefined

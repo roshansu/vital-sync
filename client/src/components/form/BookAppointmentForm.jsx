@@ -4,30 +4,97 @@ import PaymentCard from './PaymentCard'
 import TextInput from "./TextInput";
 import AddressSection from './AddressSection'
 import ConsultTypeCard from "./ConsultTypeCard";
-import SuccessModal from "../SuccessModal";
+import Toast from "./Toast";
+import apiCall from "../../api/apiCall";
 import { useState } from "react";
 
-export default function BookAppointmentForm({setCurrNav, setShowForm}) {
+export default function BookAppointmentForm({setCurrNav,imageUrl, slotId, name, fee, date, time, specialization, setShowForm,doctorId, userId}) {
   const [consultType, setConsultType]   = useState("Online");
-  const [payment, setPayment]           = useState("Online Payment");
+  const [payment, setPayment]           = useState("Online");
   const [reason, setReason]             = useState("");
   const [showModal, setShowModal]       = useState(false);
   const [confirmHovered, setConfirmHovered] = useState(false);
   const [cancelHovered, setCancelHovered]   = useState(false);
   const [address, setAddress] = useState({
-    line: "", city: "", state: "", pincode: "", landmark: "",
+    line: "", city: "", state: "", pincode: "",
   });
+
+  // console.log(docDetails)
 
   const [popup, setPopup] = useState({
     show: false,
     type: '',
-    message: ''
+    msg: ''
   })
+
+    console.log("date", date)
+
+
+  async function handleBook() {
+    // if(!address.pincode && !address.city) alert("adad")
+    if(!reason) {
+      alert("Please specify the reason") 
+      return
+    }
+    setPopup({
+      show: true,
+      msg: "Booking appointment please wait..."
+    })
+
+    let data = {
+      name,
+      specialization,
+      imageUrl,
+      doctorId,
+      userId,
+      slotId,
+      reason,
+      type: consultType.toLocaleLowerCase(),
+      date,
+      time,
+      fee,
+      payment: payment.toLocaleLowerCase(),
+      street: address.line,
+      city: address.city,
+      state: address.state,
+      postalCode: address.pincode
+    }
+
+    try{
+      const res = await apiCall('/patient/appointment/create', 'POST', data)
+
+      setPopup({
+        show: true,
+        msg: res.message
+      })
+
+    }catch(err){
+      setPopup({
+        show: true,
+        msg: err.message
+      })
+    }
+
+    setTimeout(() => {
+      setPopup({
+        show: false
+      })
+      setShowForm(false)
+    }, 4000);
+    // console.log(address, reason, consultType)
+  }
+
+  const dates = new Date(date);
+
+const formatted = dates.toDateString();
+
+
+  // console.log(name, fee, formatted, time, specialization)
 
   // Textarea focus
   const [reasonFocused, setReasonFocused] = useState(false);
 
-  const isHomeVisit = consultType === "Home Visit";
+  const isHomeVisit = consultType === "Offline";
 
   return (
     <div 
@@ -133,7 +200,7 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
                       marginBottom: 4,
                     }}
                   >
-                    Dr. Marcus Thorne
+                    {name}
                   </h2>
                   <p
                     style={{
@@ -144,7 +211,7 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
                       letterSpacing: "0.1em",
                     }}
                   >
-                    Cardiology Specialist
+                    {specialization[0]}
                   </p>
                 </div>
                 <div style={{ textAlign: "right" }}>
@@ -168,7 +235,7 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
                       color: colors.onSurface,
                     }}
                   >
-                    $120.00
+                    ${fee}
                   </p>
                 </div>
               </div>
@@ -176,8 +243,8 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
               {/* Date + Time chips */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
-                  { icon: "calendar_today", label: "October 28, 2024" },
-                  { icon: "schedule",       label: "10:30 AM"         },
+                  { icon: "calendar_today", label: formatted },
+                  { icon: "schedule",       label: time        },
                 ].map(({ icon, label }) => (
                   <div
                     key={label}
@@ -224,7 +291,7 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
               <ConsultTypeCard
                 icon="home_health"
                 label="Home Visit"
-                value="Home Visit"
+                value="Offline"
                 selected={consultType}
                 onClick={setConsultType}
               />
@@ -323,14 +390,14 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <PaymentCard
                 label="Online Payment"
-                value="Online Payment"
+                value="Online"
                 icons={["credit_card", "account_balance_wallet"]}
                 selected={payment}
                 onClick={setPayment}
               />
               <PaymentCard
                 label="Pay at Clinic"
-                value="Pay at Clinic"
+                value="offline"
                 icons={["payments"]}
                 selected={payment}
                 onClick={setPayment}
@@ -340,10 +407,10 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
 
           {/* ── Action Buttons ── */}
           <footer style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button
+            { popup.show?'': <button
               onMouseEnter={() => setConfirmHovered(true)}
               onMouseLeave={() => setConfirmHovered(false)}
-              onClick={() => setShowModal(true)}
+              onClick={handleBook}
               style={{
                 flex: 1,
                 padding: "16px",
@@ -362,7 +429,7 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
               }}
             >
               Confirm Appointment
-            </button>
+            </button>}
             <button
               onMouseEnter={() => setCancelHovered(true)}
               onMouseLeave={() => setCancelHovered(false)}
@@ -402,7 +469,7 @@ export default function BookAppointmentForm({setCurrNav, setShowForm}) {
         </p>
       </main>
 
-      {popup.show && <SuccessModal message={popup.message} type={popup.type} onClose={() => setShowModal(false)} />}
+      <Toast msg={popup.msg} visible={popup.show} />
     </div>
   );
 }

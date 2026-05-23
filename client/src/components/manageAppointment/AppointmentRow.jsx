@@ -9,10 +9,10 @@ export default function AppointmentRow({ appt, onApprove, onReject, onComplete, 
   // console.log("apppt",appt)
   
   const [hovered, setHovered] = useState(false);
-  const isPending   = appt.status === "Pending";
-  const isApproved  = appt.status === "Approved";
-  const isCompleted = appt.status === "Completed";
-  const isRejected  = appt.status === "Rejected";
+  const isPending   = appt.status === "pending";
+  const isApproved  = appt.status === "approved";
+  const isCompleted = appt.status === "aompleted";
+  const isRejected  = appt.status === "rejected";
 
   return (
     <div
@@ -35,7 +35,7 @@ export default function AppointmentRow({ appt, onApprove, onReject, onComplete, 
           {/* Patient + datetime */}
           <div className="min-w-0">
             <h3 className="text-sm md:text-base font-bold leading-tight" style={{ color: colors.onSurface }}>
-              {appt.patient}
+              {appt.patient.firstName+" "+appt.patient.lastName}
             </h3>
             <p className="text-xs mt-0.5 font-medium" style={{ color: colors.onSurfaceVariant }}>
               {appt.date} · {appt.time}
@@ -67,7 +67,7 @@ export default function AppointmentRow({ appt, onApprove, onReject, onComplete, 
 
           {/* Badges */}
           <div className="flex items-center gap-2 flex-wrap">
-            <PaymentBadge paid={appt.payment === "Paid"} />
+            <PaymentBadge paid={appt.paymentStatus === "Paid"} />
             <StatusBadge status={appt.status} />
           </div>
         </div>
