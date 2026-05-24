@@ -4,54 +4,122 @@ import PaymentCard from './PaymentCard'
 import TextInput from "./TextInput";
 import AddressSection from './AddressSection'
 import ConsultTypeCard from "./ConsultTypeCard";
-import SuccessModal from "../SuccessModal";
+import Toast from "./Toast";
+import apiCall from "../../api/apiCall";
 import { useState } from "react";
 
-export default function BookAppointmentForm({setCurrNav}) {
+export default function BookAppointmentForm({setCurrNav,imageUrl, slotId, name, fee, date, time, specialization, setShowForm,doctorId, userId}) {
   const [consultType, setConsultType]   = useState("Online");
-  const [payment, setPayment]           = useState("Online Payment");
+  const [payment, setPayment]           = useState("Online");
   const [reason, setReason]             = useState("");
   const [showModal, setShowModal]       = useState(false);
   const [confirmHovered, setConfirmHovered] = useState(false);
   const [cancelHovered, setCancelHovered]   = useState(false);
   const [address, setAddress] = useState({
-    line: "", city: "", state: "", pincode: "", landmark: "",
+    line: "", city: "", state: "", pincode: "",
   });
+
+  // console.log(docDetails)
 
   const [popup, setPopup] = useState({
     show: false,
     type: '',
-    message: ''
+    msg: ''
   })
+
+    console.log("date", date)
+
+
+  async function handleBook() {
+    // if(!address.pincode && !address.city) alert("adad")
+    if(!reason) {
+      alert("Please specify the reason") 
+      return
+    }
+    setPopup({
+      show: true,
+      msg: "Booking appointment please wait..."
+    })
+
+    let data = {
+      name,
+      specialization,
+      imageUrl,
+      doctorId,
+      userId,
+      slotId,
+      reason,
+      type: consultType.toLocaleLowerCase(),
+      date,
+      time,
+      fee,
+      payment: payment.toLocaleLowerCase(),
+      street: address.line,
+      city: address.city,
+      state: address.state,
+      postalCode: address.pincode
+    }
+
+    try{
+      const res = await apiCall('/patient/appointment/create', 'POST', data)
+
+      setPopup({
+        show: true,
+        msg: res.message
+      })
+
+    }catch(err){
+      setPopup({
+        show: true,
+        msg: err.message
+      })
+    }
+
+    setTimeout(() => {
+      setPopup({
+        show: false
+      })
+      setShowForm(false)
+    }, 4000);
+    // console.log(address, reason, consultType)
+  }
+
+  const dates = new Date(date);
+
+const formatted = dates.toDateString();
+
+
+  // console.log(name, fee, formatted, time, specialization)
 
   // Textarea focus
   const [reasonFocused, setReasonFocused] = useState(false);
 
-  const isHomeVisit = consultType === "Home Visit";
+  const isHomeVisit = consultType === "Offline";
 
   return (
-    <div>
-      <style>{`
+    <div 
+      className="fixed p-10 inset-0 z-[100] flex items-center justify-center "
+      style={{ background: "rgba(25,28,30,0.5)", backdropFilter: "blur(8px)" }}
+    >
+      {/* <style>{`
         
         body { font-family: 'Inter', sans-serif; background: ${colors.surface}; }
         input::placeholder, textarea::placeholder { color: ${colors.outline}70; }
         textarea { resize: none; }
-      `}</style>
+      `}</style> */}
 
       <main
-        style={{
-          minHeight: "100vh",
-          background: colors.surface,
-          fontFamily: "Inter",
-        }}
+        className="w-full max-h-[90%] max-w-md rounded-2xl overflow-scroll shadow-2xl"
+        style={{ background: colors.surfaceContainerLowest, animation: "popIn 0.25s cubic-bezier(0.34,1.56,0.64,1)" }}
+        // onClick={(e) => e.stopPropagation()}
       >
         <div
           style={{
-            maxWidth: 680,
+            // maxWidth: ,
             margin: "0 auto",
             background: colors.surfaceContainerLowest,
             borderRadius: 20,
-            padding: 40,
+            padding: 20,
             boxShadow: "0 32px 64px -12px rgba(25,28,30,0.07)",
           }}
         >
@@ -60,7 +128,7 @@ export default function BookAppointmentForm({setCurrNav}) {
             <h1
               style={{
                 fontFamily: "Manrope",
-                fontSize: 28,
+                fontSize: 22,
                 fontWeight: 800,
                 letterSpacing: "-0.03em",
                 color: colors.onSurface,
@@ -79,20 +147,20 @@ export default function BookAppointmentForm({setCurrNav}) {
             style={{
               background: colors.surfaceContainerLow,
               borderRadius: 16,
-              padding: 28,
+              padding: 20,
               display: "flex",
-              gap: 28,
+              // gap: 20,
               alignItems: "flex-start",
-              marginBottom: 36,
+              marginBottom: 20,
               flexWrap: "wrap",
             }}
           >
             {/* Doctor image */}
-            <div style={{ position: "relative", flexShrink: 0 }}>
+            {/* <div style={{ position: "relative", flexShrink: 0 }}>
               <img
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEqkO_T0LctAPPJ3MV5eNp0sZHe6B_KxC0CMnIUEydVqvIiuPuLFjlt6nOTnkTDnsdd3hBp2URt9jDxjROVl3L6-gK0Ak0Y4OTs05xHYzB4D9IuRpDd8mwKbwOjaUMKYWIlgHtOPZI_rPuGwYOiAa1HNyjhQkrJqZau6oTemoGzZgShpy8G0WTUpm9DLUGJmsiFT8GLg5jtxLY2RVBBMFRVQwvgi9YGfbHx45PBvoGmG22vCQ_rlWSvi1Mek8hceuwrWz0HCWsYDYo"
                 alt="Dr. Marcus Thorne"
-                style={{ width: 88, height: 88, borderRadius: 14, objectFit: "cover" }}
+                style={{ width: 40, height: 40, borderRadius: 14, objectFit: "cover" }}
               />
               <div
                 style={{
@@ -105,9 +173,9 @@ export default function BookAppointmentForm({setCurrNav}) {
                   display: "flex",
                 }}
               >
-                <DashIcon name="verified" filled size={14} color={colors.onPrimary} />
+                <DashIcon name="verified" filled size={8} color={colors.onPrimary} />
               </div>
-            </div>
+            </div> */}
 
             {/* Doctor info */}
             <div style={{ flex: 1, minWidth: 200 }}>
@@ -126,24 +194,24 @@ export default function BookAppointmentForm({setCurrNav}) {
                     style={{
                       fontFamily: "Manrope",
                       fontWeight: 700,
-                      fontSize: 20,
+                      fontSize: 14,
                       color: colors.onSurface,
                       letterSpacing: "-0.02em",
                       marginBottom: 4,
                     }}
                   >
-                    Dr. Marcus Thorne
+                    {name}
                   </h2>
                   <p
                     style={{
-                      fontSize: 11,
+                      fontSize: 10,
                       fontWeight: 700,
                       color: colors.primary,
                       textTransform: "uppercase",
                       letterSpacing: "0.1em",
                     }}
                   >
-                    Cardiology Specialist
+                    {specialization[0]}
                   </p>
                 </div>
                 <div style={{ textAlign: "right" }}>
@@ -162,12 +230,12 @@ export default function BookAppointmentForm({setCurrNav}) {
                   <p
                     style={{
                       fontFamily: "Manrope",
-                      fontWeight: 800,
-                      fontSize: 22,
+                      fontWeight: 500,
+                      fontSize: 14,
                       color: colors.onSurface,
                     }}
                   >
-                    $120.00
+                    ${fee}
                   </p>
                 </div>
               </div>
@@ -175,8 +243,8 @@ export default function BookAppointmentForm({setCurrNav}) {
               {/* Date + Time chips */}
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
                 {[
-                  { icon: "calendar_today", label: "October 28, 2024" },
-                  { icon: "schedule",       label: "10:30 AM"         },
+                  { icon: "calendar_today", label: formatted },
+                  { icon: "schedule",       label: time        },
                 ].map(({ icon, label }) => (
                   <div
                     key={label}
@@ -223,7 +291,7 @@ export default function BookAppointmentForm({setCurrNav}) {
               <ConsultTypeCard
                 icon="home_health"
                 label="Home Visit"
-                value="Home Visit"
+                value="Offline"
                 selected={consultType}
                 onClick={setConsultType}
               />
@@ -322,14 +390,14 @@ export default function BookAppointmentForm({setCurrNav}) {
             <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
               <PaymentCard
                 label="Online Payment"
-                value="Online Payment"
+                value="Online"
                 icons={["credit_card", "account_balance_wallet"]}
                 selected={payment}
                 onClick={setPayment}
               />
               <PaymentCard
                 label="Pay at Clinic"
-                value="Pay at Clinic"
+                value="offline"
                 icons={["payments"]}
                 selected={payment}
                 onClick={setPayment}
@@ -339,10 +407,10 @@ export default function BookAppointmentForm({setCurrNav}) {
 
           {/* ── Action Buttons ── */}
           <footer style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-            <button
+            { popup.show?'': <button
               onMouseEnter={() => setConfirmHovered(true)}
               onMouseLeave={() => setConfirmHovered(false)}
-              onClick={() => setShowModal(true)}
+              onClick={handleBook}
               style={{
                 flex: 1,
                 padding: "16px",
@@ -361,11 +429,11 @@ export default function BookAppointmentForm({setCurrNav}) {
               }}
             >
               Confirm Appointment
-            </button>
+            </button>}
             <button
               onMouseEnter={() => setCancelHovered(true)}
               onMouseLeave={() => setCancelHovered(false)}
-              onClick={()=>setCurrNav("appointments")}
+              onClick={()=>setShowForm(false)}
               style={{
                 padding: "16px 28px",
                 background: cancelHovered
@@ -401,7 +469,7 @@ export default function BookAppointmentForm({setCurrNav}) {
         </p>
       </main>
 
-      {popup.show && <SuccessModal message={popup.message} type={popup.type} onClose={() => setShowModal(false)} />}
+      <Toast msg={popup.msg} visible={popup.show} />
     </div>
   );
 }

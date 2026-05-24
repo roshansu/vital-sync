@@ -3,7 +3,7 @@
 
         // check role
         // console.log(req.user)
-        console.log("role", req.user.role)
+        // console.log("role", req.user.role)
         if (req.user.role !== "patient") {
             return res.status(403).json({
                 success: false,

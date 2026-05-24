@@ -8,23 +8,33 @@ const appointmentSchema = new mongoose.Schema({
         required: true
     },
 
-    doctor: {
+    canceled:{
+        type: Boolean,
+        default: false
+    },
+    doctorId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Doctor",
+        required: true
+    },
+
+    userId:{
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
         required: true
     },
 
-    appointmentDate: {
+    date: {
         type: Date,
         required: true
     },
 
-    appointmentTime: {
+    time: {
         type: String,
         required: true
     },
 
-    appointmentType: {
+    type: {
         type: String,
         enum: ["online", "offline"],
         default: "offline"
@@ -33,11 +43,7 @@ const appointmentSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: [
-            "pending",
-            "confirmed",
-            "completed",
-            "cancelled",
-            "rejected"
+            "pending", "approved", "completed", "rejected", "canceled"
         ],
         default: "pending"
     },
@@ -62,10 +68,15 @@ const appointmentSchema = new mongoose.Schema({
         enum: ["pending", "paid"],
         default: "pending"
     },
+    paymentType:{
+        type: String,
+        enum: ["online", "offline"],
+        default: "online"        
+    },
 
-    amount: {
-        type: Number,
-        default: 0
+    fee: {
+        type: String,
+        default: "N/A"
     },
 
     prescription: {
@@ -88,7 +99,14 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         enum: ["patient", "doctor", "admin"]
     },
-
+    reschedule:{
+        type: Boolean,
+        default: false
+    },
+    rescheduleReason:{
+        type: String,
+        trim: true
+    },
     cancellationReason: {
         type: String
     }

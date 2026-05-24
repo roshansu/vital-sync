@@ -10,17 +10,30 @@ import EditableInput from './EditableInput'
 import Card from './Card'
 import SectionHeader from './SectionHeader'
 import FooterAction from './FooterAction'
+import apiCall from "../../api/apiCall";
+import LoadingSpinner from "../LoadingSpinner";
+import { useEffect,useRef } from "react";
 
 export default function ProfileSettings() {
   // Personal info — only gender & dob editable
   const [gender, setGender]     = useState("Female");
   const [dob, setDob]           = useState("1992-05-14");
 
+  const [loading, setLoading] = useState(true)
+  const [image, setImage] = useState();
+  const [profileImage, setProfileImage] = useState(
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAg-T5eeVUNI6vWuxVOT95QRRIAzHsXG8Ouva7v_7sl1g-EmnX37QmzrbvYoVPH9voVghqHjj3pnR-IIKW15lkI9-PxF79vxnO34QMX0vIcjeUImtdvrs9tr0ln4fZyXA93BJ6FA6lras0Ao9s8Z9JVwAElNYvly_i5J9aeylsekairYRpc4ZA6WN4TQftjYdJclE3SgLTETuaxDkzT6L1gIb4JrhrxlMFj1Pl9Pk5TFElX81qh6P6lBXCwX0UfNC8G0VPGxyi_lB2l",
+  );
   // Bio (editable)
   const [bio, setBio] = useState(
     "Regular outpatient since 2022. Managing mild hypertension and seasonal allergies. Very active lifestyle, high health literacy."
   );
 
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  // const [image, setImage] = useState('')
   // Medical info
   const [bloodGroup, setBloodGroup]   = useState("O Positive (O+)");
   const [conditions, setConditions]   = useState("Hypertension");
@@ -31,28 +44,158 @@ export default function ProfileSettings() {
   const [allergies, setAllergies] = useState(["Peanuts", "Penicillin"]);
   const [newAllergy, setNewAllergy]   = useState("");
   const [addingAllergy, setAddingAllergy] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const [show, setShow] = useState({
+    show: false,
+    msg: ''
+  })
 
   // Address
   const [address, setAddress] = useState({
-    line: "742 Evergreen Terrace",
-    city: "Springfield",
-    state: "Illinois",
-    pincode: "62704",
+    line: "",
+    city: "",
+    state: "",
+    pincode: "",
   });
 
   // Emergency contact
   const [emergency, setEmergency] = useState({
-    name: "Marco Rodriguez",
-    relationship: "Spouse",
-    phone: "+1 (555) 0987-654",
+    name: "",
+    relationship: "",
+    phone: "",
   });
 
-  const [showToast, setShowToast] = useState(false);
+  const [showToast, setShowToast] = useState({
+    visible: false,
+    msg: ''
+  });
   const [saveHovered, setSaveHovered] = useState(false);
 
-  const handleSave = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+
+    const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+
+    setShowToast({
+      visible: true,
+      msg: "Changing picture..."
+    })
+
+    if (file) {
+      // Create preview URL
+      const imageUrl = URL.createObjectURL(file);
+      setImage(file);
+      // Update image preview
+      const formData = new FormData()
+      formData.append('image', file)
+      setProfileImage(imageUrl);
+      const res = await apiCall('/patient/profile', "PUT", formData, "multipart/form-data")
+      setShowToast({
+        visible: true,
+        msg: res.message
+      })
+      console.log(file);
+    }
+
+    setTimeout(() => {
+    setShowToast({
+      visible: false
+    })
+    }, 3000);
+
+
+  };
+
+
+  async function getData() {
+    try{
+      const res = await apiCall('/patient/profile', "GET")
+      const data = res.data
+      
+      if(res.success){
+        console.log("inside",data)
+        setEmergency({
+          relationship: data?.emergancyContact?.relation,
+          name: data?.emergancyContact?.name,
+          phone: data?.emergancyContact?.phone
+        })
+        console.log("emergancy")
+
+        setAddress({
+          line: data?.address?.street,
+          city: data?.address?.city,
+          state: data?.address?.state,
+          pincode: data?.address?.postalCode
+        })
+        console.log("address")
+        setAllergies(data?.medicalInfo?.allergies)
+        setMedHistory(data?.medicalInfo?.medicalHistory)
+        setConditions(data?.medicalInfo?.conditions)
+        setBloodGroup(data?.blood)
+        setDob(data?.userId?.dob)
+        setGender(data?.userId?.gender)
+        // console.log("name", data?.userId?.firstName)
+        setFirstName(data?.userId?.firstName)
+        setLastName(data?.userId?.lastName)
+        setEmail(data?.userId?.email)
+        setPhone(data?.userId?.phone)
+        setBio(data?.userId?.bio)
+        setProfileImage(data?.userId?.imageUrl)
+      }
+    }catch(err){
+    }
+    setLoading(false)
+
+  }
+
+  // console.log(firstName, lastName)
+
+  useEffect(()=>{
+    getData()
+  }, [])
+
+  const handleSave = async() => {
+    setShowToast({
+      visible: true,
+      msg: "Updating profile please wait..."
+    })
+    try{
+      const data = {
+      gender,
+      dob,
+      bio,
+      allergies,
+      medHistory,
+      conditions,
+      bloodGroup,
+      street: address.line,
+      city: address.city,
+      state: address.state,
+      postalCode: address.pincode,
+      name: emergency.name,
+      relation: emergency.relationship,
+      phone: emergency.phone
+    }
+
+
+    const res = await apiCall('/patient/profile', "POST", data)
+    setShowToast({
+      visible: true,
+      msg: res.message
+    })
+    // console.log(data)
+
+
+    }catch(err){
+
+    }
+
+    setTimeout(() => setShowToast({visible: false}), 3000);
+
   };
 
   const removeAllergy = (a) => setAllergies((prev) => prev.filter((x) => x !== a));
@@ -78,6 +221,8 @@ export default function ProfileSettings() {
     padding: "10px 16px",
     fontSize: 14,
   });
+
+  if(loading) return<LoadingSpinner/>
 
   return (
     <>
@@ -167,12 +312,12 @@ export default function ProfileSettings() {
                 style={{ ringColor: colors.surface }}
               >
                 <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR0qRVluOXVPe_Ua1uoPOIfr5MFDtfnbkmygfLdU-EspXByAOZ9isHvpEhRVQDbxlv3PlMJ7e_7tvcBx0BpdlpHoV3nsfg10MnVhuwBtn7lR_ZZpoCnS8MDpWBc5Xi2i6Lpa_qoNEfW-Kq5z5q74oSpSjH5KUf9vddBqp8x4iLpRJd96N0wwPxsUA2-MjWbcGwaBEYW6BzHPQiMxbLfrW7gfIKm2xGaAySoI_RGcVKXHd5UTIg4hAbTwDjKFGjk-exO09vxYJ1pD5N"
+                  src={profileImage}
                   alt="Patient Avatar"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <button
+              <button onClick={handleImageClick}
                 className="absolute -bottom-2 -right-2 w-9 h-9 rounded-full flex items-center justify-center border-4 shadow-lg transition-transform hover:scale-105"
                 style={{
                   background: colors.primary,
@@ -182,6 +327,14 @@ export default function ProfileSettings() {
               >
                 <Icon name="photo_camera" size={15} color={colors.onPrimary} />
               </button>
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+              />
             </div>
 
             {/* Bio fields */}
@@ -190,7 +343,7 @@ export default function ProfileSettings() {
                 <div>
                     
                   <FieldLabel required>Full Legal Name</FieldLabel>
-                  <LockedField value="Elena Rodriguez" />
+                  <LockedField value={firstName+" "+lastName} />
                 </div>
                 <div>
                   <FieldLabel>Patient ID</FieldLabel>
@@ -223,25 +376,25 @@ export default function ProfileSettings() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <FieldLabel required>First Name</FieldLabel>
-                    <LockedField value="Elena" />
+                    <LockedField value={firstName} />
                   </div>
                   <div>
                     <FieldLabel required>Last Name</FieldLabel>
-                    <LockedField value="Rodriguez" />
+                    <LockedField value={lastName} />
                   </div>
                 </div>
 
                 {/* Email (locked) */}
                 <div>
                   <FieldLabel required>Email Address</FieldLabel>
-                  <LockedField value="elena.r@example.health" />
+                  <LockedField value={email} />
                 </div>
 
                 {/* Phone + Gender */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <FieldLabel required>Phone Number</FieldLabel>
-                    <LockedField value="+1 (555) 0123-456" />
+                    <LockedField value={phone} />
                   </div>
                   <div>
                     <FieldLabel required>Gender</FieldLabel>
@@ -393,14 +546,14 @@ export default function ProfileSettings() {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <FieldLabel required>Current Medications</FieldLabel>
                   <EditableInput
                     value={medications}
                     onChange={(e) => setMedications(e.target.value)}
                     placeholder="e.g. Lisinopril 10mg"
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <FieldLabel>Medical History</FieldLabel>
@@ -447,17 +600,7 @@ export default function ProfileSettings() {
                   ))}
                 </div>
 
-                {/* Map preview */}
-                <div
-                  className="mt-2 rounded-lg overflow-hidden"
-                  style={{ aspectRatio: "21/9", filter: "grayscale(1) contrast(0.8)", opacity: 0.7 }}
-                >
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzlmK511i-DTNJ7CjGWxFXLVoSX4lcr7BgK1x7kmBdvFTWA19ga6qg-PmXsfQoVEEYO9dfsjhPzCgqepDTZ5PPhxEUebu6uWS59W4cjvNRrB7J_V5lsq0eYYj74cNp8nGLAeaT9s-IZFNe-iIs6ArNJKK1iVRyRLu4h0Rxjv7128nuswxyA9AsM_Q0MUUx8b1dPvH3PhMnB0P7UwoG3PfwbDSjUGgBPJqUWcakM0CdcgRaSvj-EDaLeAIa0xW6qaRmzlenQCJ2mjjS"
-                    alt="Location Map"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+
               </Card>
             </section>
 
@@ -540,7 +683,7 @@ export default function ProfileSettings() {
         </main>
       </div>
 
-      <Toast visible={showToast} />
+      <Toast visible={showToast.visible} msg={showToast.msg} />
     </>
   );
 }

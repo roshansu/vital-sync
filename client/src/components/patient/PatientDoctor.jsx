@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DEPARTMENTS, DAYS, MONTHS, DOCTORS } from "../../constant/constData";
 import DashIcon from "../DashIcon";
 import { colors } from "../../constant/style";
 import MiniCalendar from '../MiniCalendar'
 import DoctorCard from '../DoctorCard'
-import AppointmentForm from "../form/BookAppointmentForm";
 import apiCall from "../../api/apiCall";
+import LoadingSpinner from "../LoadingSpinner";
+import NoData from '../NoData'
 
 export default function PatientDoctor({setCurrNav}) {
   const [activeDept, setActiveDept] = useState("All Departments");
@@ -15,13 +16,22 @@ export default function PatientDoctor({setCurrNav}) {
   const [locationFocused, setLocationFocused] = useState(false);
   const [showForm, setShowForm] = useState(false)
   const [data, setDoctors] = useState([])
-
+  const [loading, setLoading] = useState(true)
+  const [docDetails, setDocDetails] = useState([])
 
   async function getData() {
-    const res = await apiCall('/patient/doctor')
+    setLoading(true)
+    const res = await apiCall('/patient/doctor', "GET")
     console.log("doctor details", res)
-    setDoctors(res)
+    setDoctors(res?.data || [])
+    setLoading(false)
   }
+
+  useEffect(()=>{
+    getData()
+  },[])
+
+  
 
   const inputBase = (focused) => ({
     width: "100%",
@@ -36,6 +46,8 @@ export default function PatientDoctor({setCurrNav}) {
     boxShadow: focused ? `inset 0 -2px 0 ${colors.primaryContainer}` : "none",
     transition: "box-shadow 0.2s",
   });
+
+  if(loading) return <LoadingSpinner/>
 
   return (
     <>
@@ -172,11 +184,14 @@ export default function PatientDoctor({setCurrNav}) {
             gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))",
             gap: 28,
           }}>
-            {DOCTORS.map((doc) => (
-              <DoctorCard key={doc.id} setCurrNav={setCurrNav} doctor={doc} />
-            ))}
+            { data.length>0 ?  data.map((doc) => (
+              <DoctorCard setDocDetails={setDocDetails} slotId={doc._id} key={doc._id} setShowForm={setShowForm} schedule = {doc} setCurrNav={setCurrNav} doctor={doc} />
+            )): <NoData title="No doctor available at this time!" /> }
           </section>
         </div>
+
+
+
       </main>
 
     </>

@@ -14,15 +14,16 @@ import { patientNav } from '../../constant/constData'
 const PatientPage = () => {
 
     const [currNav, setCurrNav] = useState('dashboard')
-
+    const [prescriptionData, setPrescriptionData] = useState([])
+    console.log(prescriptionData)
     const components = {
         dashboard: <PatientDashboard setCurrNav={setCurrNav} />,
         doctors: <PatientDoctor setCurrNav={setCurrNav} />,
-        book: <BookAppointmentForm setCurrNav={setCurrNav} />,
+        // book: <BookAppointmentForm setCurrNav={setCurrNav} />,
         appointments: <Appointments/>,
-        prescriptions: <Prescriptions setCurrNav={setCurrNav} />,
-        prescriptionDetail: <PrescriptionDetail setCurrNav={setCurrNav}/>,
-        reports: <Reports/>,
+        prescriptions: <Prescriptions setPrescriptionData={setPrescriptionData} setCurrNav={setCurrNav} />,
+        prescriptionDetail: <PrescriptionDetail prescriptionData={prescriptionData} setCurrNav={setCurrNav}/>,
+        // reports: <Reports/>,
         chatBot: <AIHealthAssistant/>,
         profile: <ProfileSettings/>
     }

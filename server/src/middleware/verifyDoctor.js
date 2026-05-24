@@ -1,4 +1,6 @@
- const verifyDoctor = async (req, res, next) => {
+import Doctor from "../models/doctor.js";
+
+const verifyDoctor = async (req, res, next) => {
     try {
 
         // check role
@@ -11,6 +13,9 @@
             });
         }
 
+        const doctor = await Doctor.findOne({userId: req.user._id})
+
+        req.doctor = doctor
         next();
 
     } catch (error) {

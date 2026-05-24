@@ -4,9 +4,9 @@ import express from "express";
 import {
     createAppointment,
     getPatientAppointments,
-    getSingleAppointment,
+    // getSingleAppointment,
     updateAppointmentStatus,
-    deleteAppointment
+    // deleteAppointment
 } from "../../controllers/patient/appointment.control.js";
 
 import verifyUser from "../../middleware/verifyUser.js";
@@ -28,11 +28,11 @@ patientAppointmentRoute.get(
     getPatientAppointments
 );
 
-patientAppointmentRoute.get(
-    "/:id",
-    verifyUser,
-    getSingleAppointment
-);
+// patientAppointmentRoute.get(
+//     "/:id",
+//     verifyUser,
+//     getSingleAppointment
+// );
 
 patientAppointmentRoute.put(
     "/update-status/:id",
@@ -40,10 +40,10 @@ patientAppointmentRoute.put(
     updateAppointmentStatus
 );
 
-patientAppointmentRoute.delete(
-    "/delete/:id",
-    verifyUser,
-    deleteAppointment
-);
+// patientAppointmentRoute.delete(
+//     "/delete/:id",
+//     verifyUser,
+//     deleteAppointment
+// );
 
 export default patientAppointmentRoute;

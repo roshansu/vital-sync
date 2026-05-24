@@ -13,9 +13,9 @@ const verifyUser = async(req, res, next)=>{
             console.log("error token")
             throw new Error("Invalid token ")
         }
-        console.log("object")
+        // console.log("object")
         const payload = jwt.verify(token, jwtKey)
-        console.log("payload",payload)
+        // console.log("payload",payload)
         const {_id} = payload
 
         // console.log(payload)
@@ -25,14 +25,14 @@ const verifyUser = async(req, res, next)=>{
         }
 
         const user = await User.findById({_id})
-        console.log(user)
+        // console.log(user)
         if(!user){
             console.log(user)
             throw new Error("User does not exist")
         }
-        console.log("object")
+        // console.log("object")
          const isBlocked = await redisClient.exists(`token:${token}`)
-        console.log(isBlocked)
+        // console.log(isBlocked)
         if(isBlocked){
             throw new Error("invalid token")
         }

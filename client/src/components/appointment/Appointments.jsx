@@ -1,26 +1,48 @@
-import { useState } from "react";
-import { UPCOMING } from "../../constant/constData";
+import { useEffect, useState } from "react";
+// import { UPCOMING } from "../../constant/constData";
 import Icon from "./Icon";
 import EmptyState from '../EmptyState'
 import AppointmentCard from './AppointmentCard'
 import { colors } from "../../constant/style";
+import apiCall from "../../api/apiCall";
+import LoadingSpinner from "../LoadingSpinner";
 
 export default function Appointments() {
   const [activeTab, setActiveTab]       = useState("Schedule");
   const [search, setSearch]             = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
-  const [appointments, setAppointments] = useState(UPCOMING);
-
+  const [appointments, setAppointments] = useState([]);
+  const [data, setData] = useState([])
   const tabs = ["Schedule", "Pending"];
+
+  const [loading, setLoading] = useState(true)
+
+  async function getData() {
+    setLoading(true)
+    try{
+        const res = await apiCall('/patient/appointment/my-appointments', "GET")
+        setAppointments(res.data)
+    }catch(err){
+      setLoading(false)
+    }
+
+    setLoading(false)
+  }
+
+  useEffect(()=>{
+    getData()
+  },[])
 
   const handleCancel = (id) =>
     setAppointments((prev) => prev.filter((a) => a.id !== id));
 
-  const filtered = appointments.filter(
-    (a) =>
-      a.name.toLowerCase().includes(search.toLowerCase()) ||
-      a.specialty.toLowerCase().includes(search.toLowerCase())
-  );
+  // const filtered = appointments.filter(
+  //   (a) =>
+  //     a.name.toLowerCase().includes(search.toLowerCase()) ||
+  //     a.specialty.toLowerCase().includes(search.toLowerCase())
+  // );
+
+  if(loading) return <LoadingSpinner/>
 
   return (
     <>
@@ -140,11 +162,11 @@ export default function Appointments() {
               </span> */}
             </div>
 
-            {filtered.length > 0 ? (
+            {appointments?.length > 0 ? (
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {filtered.map((appt) => (
+                {appointments.map((appt) => (
                   <AppointmentCard
-                    key={appt.id}
+                    key={appt._id}
                     appt={appt}
                     onCancel={handleCancel}
                   />
@@ -170,7 +192,7 @@ export default function Appointments() {
           </section>
 
           {/* ── Recent Medical Activity ── */}
-          <section className="space-y-6">
+          {/* <section className="space-y-6">
             <div className="flex items-center justify-between">
               <h2
                 className="text-lg font-bold"
@@ -187,7 +209,7 @@ export default function Appointments() {
             </div>
 
             <EmptyState />
-          </section>
+          </section> */}
         </main>
       </div>
     </>

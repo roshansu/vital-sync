@@ -9,7 +9,10 @@ const addressSchema = new mongoose.Schema({
   city: String,
   state: String,
   postalCode: String,
-  country: String
+  country: {
+    type: String,
+    default: "india"
+  }
 });
 
 const Address = mongoose.model('Address', addressSchema)

@@ -1,47 +1,115 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { colors } from "../../constant/style";
-import BioTextarea from './BioTextArea'
-import EditSelect from './EditSelect'
-import QualChip from './QualChip'
-import SectionTitle from './SectionTitle'
-import SpecialtyChip from './SpecialtyChip'
+import BioTextarea from "./BioTextArea";
+import EditSelect from "./EditSelect";
+import QualChip from "./QualChip";
+import SectionTitle from "./SectionTitle";
+import SpecialtyChip from "./SpecialtyChip";
 import Icon from "../appointment/Icon";
 import FieldLabel from "../form/FieldLabel";
-import LockedField from '../form/LockedField'
+import LockedField from "../form/LockedField";
 import EditableInput from "../form/EditableInput";
 import Card from "../form/Card";
 import Toast from "../form/Toast";
+import apiCall from "../../api/apiCall";
+import LoadingSpinner from "../LoadingSpinner";
+import { useEffect } from "react";
 
 const QUALIFICATION_OPTIONS = [
-  "MBBS", "MD", "MS", "DM", "MCh", "DNB", "FRCS", "MRCP", "PhD", "MDS", "FCPS",
+  "MBBS",
+  "MD",
+  "MS",
+  "DM",
+  "MCh",
+  "DNB",
+  "FRCS",
+  "MRCP",
+  "PhD",
+  "MDS",
+  "FCPS",
 ];
 const SPECIALTY_OPTIONS = [
-  "Cardiology", "Neurology", "Internal Medicine", "Dermatology",
-  "Pediatrics", "Orthopedics", "Oncology", "Psychiatry", "Radiology",
-  "Endocrinology", "Pulmonology", "Gastroenterology",
+  "Cardiology",
+  "Neurology",
+  "Internal Medicine",
+  "Dermatology",
+  "Pediatrics",
+  "Orthopedics",
+  "Oncology",
+  "Psychiatry",
+  "Radiology",
+  "Endocrinology",
+  "Pulmonology",
+  "Gastroenterology",
 ];
 const EXPERIENCE_OPTIONS = [
-  "Less than 5 years", "5–10 Years", "10–15 Years", "15+ Years",
+  "Less than 5 years",
+  "5–10 Years",
+  "10–15 Years",
+  "15+ Years",
 ];
 const US_STATES = [
-  "Alabama","Alaska","Arizona","Arkansas","California","Colorado","Connecticut",
-  "Delaware","Florida","Georgia","Hawaii","Idaho","Illinois","Indiana","Iowa",
-  "Kansas","Kentucky","Louisiana","Maine","Maryland","Massachusetts","Michigan",
-  "Minnesota","Mississippi","Missouri","Montana","Nebraska","Nevada","New Hampshire",
-  "New Jersey","New Mexico","New York","North Carolina","North Dakota","Ohio",
-  "Oklahoma","Oregon","Pennsylvania","Rhode Island","South Carolina","South Dakota",
-  "Tennessee","Texas","Utah","Vermont","Virginia","Washington","West Virginia",
-  "Wisconsin","Wyoming",
+  "Alabama",
+  "Alaska",
+  "Arizona",
+  "Arkansas",
+  "California",
+  "Colorado",
+  "Connecticut",
+  "Delaware",
+  "Florida",
+  "Georgia",
+  "Hawaii",
+  "Idaho",
+  "Illinois",
+  "Indiana",
+  "Iowa",
+  "Kansas",
+  "Kentucky",
+  "Louisiana",
+  "Maine",
+  "Maryland",
+  "Massachusetts",
+  "Michigan",
+  "Minnesota",
+  "Mississippi",
+  "Missouri",
+  "Montana",
+  "Nebraska",
+  "Nevada",
+  "New Hampshire",
+  "New Jersey",
+  "New Mexico",
+  "New York",
+  "North Carolina",
+  "North Dakota",
+  "Ohio",
+  "Oklahoma",
+  "Oregon",
+  "Pennsylvania",
+  "Rhode Island",
+  "South Carolina",
+  "South Dakota",
+  "Tennessee",
+  "Texas",
+  "Utah",
+  "Vermont",
+  "Virginia",
+  "Washington",
+  "West Virginia",
+  "Wisconsin",
+  "Wyoming",
 ];
-
-
 
 export default function DoctorProfile() {
   // Personal (locked)
-  const lockedName  = "Dr. Julianne Moore";
-  const lockedEmail = "j.moore@clinical-atelier.com";
-  const lockedPhone = "+1 (555) 012-3456";
-
+  // const lockedName = "Dr. Julianne Moore";
+  // const lockedEmail = "j.moore@clinical-atelier.com";
+  // const lockedPhone = "+1 (555) 012-3456";
+  const [lockedName, setLockedName] = useState("");
+  const [lockedEmail, setLockedEmail] = useState("");
+  const [lockedPhone, setLockedPhone] = useState("");
+  const [image, setImage] = useState();
   // Address
   const [address, setAddress] = useState({
     street: "124 Medical Plaza, Suite 402",
@@ -50,53 +118,174 @@ export default function DoctorProfile() {
     zip: "10001",
   });
 
+  const [loading, setLoading] = useState(true);
+  const [isApproved, setIsApproved] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
   // Professional
-  const [license,     setLicense]     = useState("MED-99482-CM");
-  const [experience,  setExperience]  = useState("15+ Years");
-  const [designation, setDesignation] = useState("Chief Medical Officer");
-  const [department,  setDepartment]  = useState("Internal Medicine");
+  const [license, setLicense] = useState("");
+  const [experience, setExperience] = useState("15+ Years");
+  const [designation, setDesignation] = useState("Consultant");
+  const [department, setDepartment] = useState("Internal Medicine");
 
   // Qualifications
   const [qualifications, setQualifications] = useState(["MBBS", "MD", "PhD"]);
-  const [newQual, setNewQual]     = useState("");
+  const [newQual, setNewQual] = useState("");
   const [addingQual, setAddingQual] = useState(false);
 
   // Specialties
-  const [specialties, setSpecialties] = useState(["Cardiology", "Neurology"]);
-  const [newSpec, setNewSpec]     = useState("");
+  const [specialties, setSpecialties] = useState([]);
+  const [newSpec, setNewSpec] = useState("");
   const [addingSpec, setAddingSpec] = useState(false);
 
   // Bio
-  const [bio, setBio] = useState(
-    `Dr. Julianne Moore is a distinguished board-certified Internal Medicine specialist with over 15 years of clinical excellence. As the Chief Medical Officer at Central Medical, she oversees clinical operations while maintaining a focus on personalized patient care.\n\nHer research primarily focuses on integrated therapeutic approaches for chronic condition management. She has been recognized globally for her contributions to modernizing clinical workflows and her commitment to advancing medical education within hospital networks. Her philosophy centers on "Compassionate Precision"—marrying high-tech diagnostic accuracy with deeply human clinical interactions.`
+  const [bio, setBio] = useState(''
   );
 
   // UI state
-  const [saving, setSaving]   = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [showToast, setShowToast] = useState({
+    visible: false,
+    msg: "",
+  });
   const [autoSaved, setAutoSaved] = useState("Auto-saved 2 mins ago");
   const [profileHov, setProfileHov] = useState(false);
-  const [saveHov, setSaveHov]       = useState(false);
-  const [cancelHov, setCancelHov]   = useState(false);
-  const [pubHov, setPubHov]         = useState(false);
+  const [saveHov, setSaveHov] = useState(false);
+  const [cancelHov, setCancelHov] = useState(false);
+  const [pubHov, setPubHov] = useState(false);
 
-  const handleSave = () => {
+  const fileInputRef = useRef(null);
+
+  const [profileImage, setProfileImage] = useState(
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAg-T5eeVUNI6vWuxVOT95QRRIAzHsXG8Ouva7v_7sl1g-EmnX37QmzrbvYoVPH9voVghqHjj3pnR-IIKW15lkI9-PxF79vxnO34QMX0vIcjeUImtdvrs9tr0ln4fZyXA93BJ6FA6lras0Ao9s8Z9JVwAElNYvly_i5J9aeylsekairYRpc4ZA6WN4TQftjYdJclE3SgLTETuaxDkzT6L1gIb4JrhrxlMFj1Pl9Pk5TFElX81qh6P6lBXCwX0UfNC8G0VPGxyi_lB2l",
+  );
+
+  const convertToArray = (value) => {
+    if (!value) return [];
+
+    return value
+      .split(",")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  };
+
+  const handleAvailable = async () =>{
+    await apiCall('/doctor/profile/available', 'POST', {available: !isAvailable})
+    setIsAvailable((prev)=>!prev)
+  }
+
+  const fetchProfile = async () => {
+    try {
+      setLoading(true);
+      const res = await apiCall("/doctor/profile", "GET");
+      console.log(res);
+      const data = res.data;
+
+      if (res.success) {
+        setLockedName(data.firstName + " " + data.lastName);
+        setLockedEmail(data.email);
+        setLockedPhone(data.phone);
+
+        setAddress((p) => ({
+          ...p,
+          street: data.street,
+          city: data.city,
+          state: data.state,
+          zip: data.postalCode,
+        }));
+      }
+
+      setLicense(data.license)
+      setIsApproved(data.isApproved);
+      setIsAvailable(data.available)
+      setExperience(data?.experience || "");
+      setSpecialties(convertToArray(data.specialization[0]));
+      setQualifications(convertToArray(data.qualification[0]));
+      setBio(data.bio);
+      setProfileImage(
+        data?.imageUrl ||
+          "https://t4.ftcdn.net/jpg/03/32/59/65/360_F_332596535_lAdLhf6KzbW6PWXBWeIFTovTii1drkbT.jpg",
+      );
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProfile();
+  }, []);
+
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+
+    if (file) {
+      // Create preview URL
+      const imageUrl = URL.createObjectURL(file);
+      setImage(file);
+      // Update image preview
+      setProfileImage(imageUrl);
+
+      console.log(file);
+    }
+  };
+
+  const handleSave = async () => {
     setSaving(true);
 
-    const formData = new FormData()
+    const formData = new FormData();
 
-    formData.append('license', license)
-    formData.append('experience', experience)
-    formData.append('address', address)
-    formData.append('bio', bio)
+    console.log(qualifications, specialties);
 
-    console.log(formData)
+    // if(license)
+    formData.append("license", license);
+
+    // if(experience)
+    formData.append("experience", experience);
+
+    // if(address)
+    formData.append("street", address.street);
+    formData.append("city", address.city);
+    formData.append("state", address.state);
+    formData.append("postalCode", address.zip);
+
+    // if(bio)
+    formData.append("bio", bio);
+
+    // if(newSpec)
+    formData.append("specialization", specialties);
+
+    // if(newQual)
+    formData.append("qualification", qualifications);
+
+    // if(image)
+    formData.append("image", image);
+
+    // if(Object.keys(formData).length<1){
+    //   console.log(Object.keys(formData).length)
+    //   alert('formdata is empty')
+    // }
+
+    const res = await apiCall(
+      "/doctor/profile",
+      "POST",
+      formData,
+      "multipart/form-data",
+    );
+
+    console.log(formData);
 
     setTimeout(() => {
       setSaving(false);
-      setAutoSaved("Auto-saved just now");
-      setShowToast(true);
-      setTimeout(() => setShowToast(false), 3500);
+      setAutoSaved("Auto-saved just n");
+      setShowToast({
+        visible: true,
+        msg: res.message,
+      });
+      setTimeout(() => setShowToast(false), 4000);
     }, 1200);
   };
 
@@ -104,15 +293,21 @@ export default function DoctorProfile() {
     if (newQual && !qualifications.includes(newQual)) {
       setQualifications((p) => [...p, newQual]);
     }
-    setNewQual(""); setAddingQual(false);
+    setNewQual("");
+    setAddingQual(false);
   };
 
   const addSpec = () => {
     if (newSpec && !specialties.includes(newSpec)) {
       setSpecialties((p) => [...p, newSpec]);
     }
-    setNewSpec(""); setAddingSpec(false);
+    setNewSpec("");
+    setAddingSpec(false);
   };
+
+  if (loading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <>
@@ -126,30 +321,36 @@ export default function DoctorProfile() {
           to   { opacity: 1; transform: translateY(0); }
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .spin { animation: spin 0.8s linear infinite; }
+        .spin { animation: spin 0ow.8s linear infinite; }
         @media (max-width: 768px) { .main-offset { margin-left: 0 !important; } }
       `}</style>
 
       <main
         className="main-offset min-h-screen"
-        style={{ background: colors.surface, fontFamily: "Inter" }}
-      >
+        style={{ background: colors.surface, fontFamily: "Inter" }}>
         <div className="p-6 md:p-10 max-w-6xl mx-auto space-y-8 pb-16">
-
           {/* ── Profile Header ── */}
           <section
             className="rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8 transition-colors"
-            style={{ background: colors.surfaceContainerLowest, boxShadow: "0 2px 16px rgba(25,28,30,0.05)" }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = colors.surfaceContainerLowest)}
-          >
+            style={{
+              background: colors.surfaceContainerLowest,
+              boxShadow: "0 2px 16px rgba(25,28,30,0.05)",
+            }}
+            onMouseEnter={(e) =>
+              (e.currentTarget.style.background = colors.surfaceContainerLowest)
+            }>
             {/* Avatar */}
             <div className="relative flex-shrink-0">
               <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg-T5eeVUNI6vWuxVOT95QRRIAzHsXG8Ouva7v_7sl1g-EmnX37QmzrbvYoVPH9voVghqHjj3pnR-IIKW15lkI9-PxF79vxnO34QMX0vIcjeUImtdvrs9tr0ln4fZyXA93BJ6FA6lras0Ao9s8Z9JVwAElNYvly_i5J9aeylsekairYRpc4ZA6WN4TQftjYdJclE3SgLTETuaxDkzT6L1gIb4JrhrxlMFj1Pl9Pk5TFElX81qh6P6lBXCwX0UfNC8G0VPGxyi_lB2l"
-                alt="Dr. Julianne Moore"
+                src={profileImage}
+                alt="Profile"
                 className="w-32 h-32 md:w-40 md:h-40 rounded-xl object-cover ring-4"
-                style={{ ringColor: colors.surfaceContainerLow, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+                style={{
+                  ringColor: colors.surfaceContainerLow,
+                  boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
+                }}
               />
+
               <button
                 className="absolute -bottom-2 -right-2 p-2.5 rounded-lg shadow-lg transition-all active:scale-95"
                 style={{
@@ -160,9 +361,18 @@ export default function DoctorProfile() {
                 }}
                 onMouseEnter={() => setProfileHov(true)}
                 onMouseLeave={() => setProfileHov(false)}
-              >
+                onClick={handleImageClick}>
                 <Icon name="edit" size={15} color={colors.onPrimary} />
               </button>
+
+              {/* Hidden File Input */}
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+              />
             </div>
 
             {/* Info */}
@@ -170,37 +380,81 @@ export default function DoctorProfile() {
               <div className="flex flex-col md:flex-row items-center md:items-center gap-2 mb-2 flex-wrap justify-center md:justify-start">
                 <h2
                   className="text-2xl md:text-3xl font-extrabold tracking-tight"
-                  style={{ fontFamily: "Manrope", color: colors.onSurface }}
-                >
+                  style={{ fontFamily: "Manrope", color: colors.onSurface }}>
                   {lockedName}
                 </h2>
                 <span
                   className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold"
-                  style={{ background: "#eff6ff", color: "#1d4ed8" }}
-                >
-                  <Icon name="verified" filled size={13} color="#1d4ed8" />
-                  VERIFIED PROVIDER
+                  style={
+                    isApproved
+                      ? {
+                          background: "#eff6ff",
+                          color: "#1d4ed8",
+                        }
+                      : {
+                          background: "#fef3c7",
+                          color: "#b45309",
+                        }
+                  }>
+                  <Icon
+                    name={isApproved ? "verified" : "pending"}
+                    filled
+                    size={13}
+                    color={isApproved ? "#1d4ed8" : "#b45309"}
+                  />
+
+                  {isApproved ? "VERIFIED PROVIDER" : "NOT VERIFIED"}
                 </span>
               </div>
 
-              <p className="text-base font-medium mb-4" style={{ color: "#64748b" }}>
+              <p
+                className="text-base font-medium mb-4"
+                style={{ color: "#64748b" }}>
                 {designation} · {department}
               </p>
 
               <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
-                <div
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold"
-                  style={{ background: "#f0fdf4", color: "#15803d" }}
-                >
-                  <div className="w-2 h-2 rounded-full" style={{ background: "#22c55e" }} />
-                  Available for Consultations
-                </div>
-                <div
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold"
-                  style={{ background: colors.surfaceContainerLow, color: "#64748b" }}
-                >
-                  <Icon name="location_on" size={14} color="#94a3b8" />
-                  Unit A, West Wing
+                <div className="flex items-center gap-3">
+                  {/* Status Badge */}
+                  <div
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-all"
+                    style={
+                      isAvailable
+                        ? {
+                            background: "#f0fdf4",
+                            color: "#15803d",
+                          }
+                        : {
+                            background: "#fef2f2",
+                            color: "#b91c1c",
+                          }
+                    }>
+                    <div
+                      className="w-2 h-2 rounded-full"
+                      style={{
+                        background: isAvailable ? "#22c55e" : "#ef4444",
+                      }}
+                    />
+
+                    {isAvailable
+                      ? "Available for Consultations"
+                      : "Not Available"}
+                  </div>
+
+                  {/* Toggle Button */}
+                  <button
+                    onClick={handleAvailable}
+                    className="relative w-12 h-6 rounded-full transition-all duration-300"
+                    style={{
+                      background: isAvailable ? "#22c55e" : "#d1d5db",
+                    }}>
+                    <div
+                      className="absolute top-1 w-4 h-4 rounded-full bg-white transition-all duration-300"
+                      style={{
+                        left: isAvailable ? "26px" : "4px",
+                      }}
+                    />
+                  </button>
                 </div>
               </div>
             </div>
@@ -212,13 +466,14 @@ export default function DoctorProfile() {
                 onMouseLeave={() => setPubHov(false)}
                 className="px-5 py-2.5 rounded-lg font-bold text-sm transition-all"
                 style={{
-                  background: pubHov ? colors.primary : `${colors.primaryContainer}20`,
+                  background: pubHov
+                    ? colors.primary
+                    : `${colors.primaryContainer}20`,
                   color: pubHov ? colors.onPrimary : colors.primaryContainer,
                   border: "none",
                   cursor: "pointer",
                   fontFamily: "Manrope",
-                }}
-              >
+                }}>
                 Public Profile View
               </button>
             </div>
@@ -226,10 +481,12 @@ export default function DoctorProfile() {
 
           {/* ── Main grid ── */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-8">
-
             {/* ── Personal Details (8 cols) ── */}
             <Card className="lg:col-span-8 space-y-6">
-              <SectionTitle title="Personal Details" sub="General Information" />
+              <SectionTitle
+                title="Personal Details"
+                sub="General Information"
+              />
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 {/* Locked fields */}
@@ -247,24 +504,31 @@ export default function DoctorProfile() {
                 </div>
 
                 {/* Designation (editable) */}
-                <div>
+                {/* <div>
                   <FieldLabel required>Designation</FieldLabel>
                   <EditableInput
                     value={designation}
                     onChange={setDesignation}
                     placeholder="e.g. Chief Medical Officer"
                   />
-                </div>
+                </div> */}
               </div>
 
               {/* Lock notice */}
               <div
                 className="flex items-start gap-2.5 p-3 rounded-xl"
-                style={{ background: `${colors.primary}08` }}
-              >
-                <Icon name="info" size={15} color={colors.primaryContainer} className="mt-0.5 flex-shrink-0" />
-                <p className="text-xs leading-relaxed" style={{ color: colors.onPrimaryFixedVariant }}>
-                  Name, email, and phone are managed by the hospital administration and cannot be edited here.
+                style={{ background: `${colors.primary}08` }}>
+                <Icon
+                  name="info"
+                  size={15}
+                  color={colors.primaryContainer}
+                  className="mt-0.5 flex-shrink-0"
+                />
+                <p
+                  className="text-xs leading-relaxed"
+                  style={{ color: colors.onPrimaryFixedVariant }}>
+                  Name, email, and phone are managed by the hospital
+                  administration and cannot be edited here.
                 </p>
               </div>
 
@@ -273,14 +537,16 @@ export default function DoctorProfile() {
                 <div className="flex items-center gap-2 mb-4">
                   <div
                     className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                    style={{ background: colors.surfaceContainerHigh }}
-                  >
-                    <Icon name="location_on" size={16} color={colors.onSurfaceVariant} />
+                    style={{ background: colors.surfaceContainerHigh }}>
+                    <Icon
+                      name="location_on"
+                      size={16}
+                      color={colors.onSurfaceVariant}
+                    />
                   </div>
                   <h4
                     className="text-base font-bold"
-                    style={{ fontFamily: "Manrope", color: colors.onSurface }}
-                  >
+                    style={{ fontFamily: "Manrope", color: colors.onSurface }}>
                     Work Address
                   </h4>
                 </div>
@@ -291,7 +557,9 @@ export default function DoctorProfile() {
                     <FieldLabel required>Street Address</FieldLabel>
                     <EditableInput
                       value={address.street}
-                      onChange={(v) => setAddress((p) => ({ ...p, street: v }))}
+                      onChange={(e) =>
+                        setAddress((p) => ({ ...p, street: e.target.value }))
+                      }
                       placeholder="Street, Building, Suite"
                     />
                   </div>
@@ -302,7 +570,9 @@ export default function DoctorProfile() {
                       <FieldLabel required>City</FieldLabel>
                       <EditableInput
                         value={address.city}
-                        onChange={(v) => setAddress((p) => ({ ...p, city: v }))}
+                        onChange={(e) =>
+                          setAddress((p) => ({ ...p, city: e.target.value }))
+                        }
                         placeholder="City"
                       />
                     </div>
@@ -310,7 +580,9 @@ export default function DoctorProfile() {
                       <FieldLabel required>State</FieldLabel>
                       <EditSelect
                         value={address.state}
-                        onChange={(v) => setAddress((p) => ({ ...p, state: v }))}
+                        onChange={(v) =>
+                          setAddress((p) => ({ ...p, state: v }))
+                        }
                         options={US_STATES}
                         placeholder="Select state"
                       />
@@ -323,13 +595,15 @@ export default function DoctorProfile() {
                       <FieldLabel required>ZIP Code</FieldLabel>
                       <EditableInput
                         value={address.zip}
-                        onChange={(v) => setAddress((p) => ({ ...p, zip: v }))}
+                        onChange={(e) =>
+                          setAddress((p) => ({ ...p, zip: e.target.value }))
+                        }
                         placeholder="10001"
                       />
                     </div>
                     <div>
                       <FieldLabel>Country</FieldLabel>
-                      <LockedField value="United States" icon="public" />
+                      <LockedField value="India" icon="public" />
                     </div>
                   </div>
                 </div>
@@ -345,7 +619,7 @@ export default function DoctorProfile() {
                 <FieldLabel required>License Number</FieldLabel>
                 <EditableInput
                   value={license}
-                  onChange={setLicense}
+                  onChange={(e) => setLicense(e.target.value)}
                   placeholder="e.g. MED-99482-CM"
                 />
               </div>
@@ -355,7 +629,7 @@ export default function DoctorProfile() {
                 <FieldLabel>Department</FieldLabel>
                 <EditableInput
                   value={department}
-                  onChange={setDepartment}
+                  onChange={(e) => setDepartment(e.target.value)}
                   placeholder="e.g. Internal Medicine"
                 />
               </div>
@@ -374,12 +648,10 @@ export default function DoctorProfile() {
               <div>
                 <div
                   className="p-4 rounded-xl space-y-3"
-                  style={{ background: `${colors.primaryFixed}60` }}
-                >
+                  style={{ background: `${colors.primaryFixed}60` }}>
                   <div
                     className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider"
-                    style={{ color: colors.primary }}
-                  >
+                    style={{ color: colors.primary }}>
                     <Icon name="school" size={15} color={colors.primary} />
                     Qualifications
                   </div>
@@ -388,7 +660,9 @@ export default function DoctorProfile() {
                       <QualChip
                         key={q}
                         label={q}
-                        onRemove={() => setQualifications((p) => p.filter((x) => x !== q))}
+                        onRemove={() =>
+                          setQualifications((p) => p.filter((x) => x !== q))
+                        }
                       />
                     ))}
                     {addingQual ? (
@@ -403,21 +677,37 @@ export default function DoctorProfile() {
                             color: colors.onSurface,
                             boxShadow: `0 0 0 1.5px ${colors.primaryContainer}50`,
                             fontFamily: "Inter",
-                          }}
-                        >
+                          }}>
                           <option value="">Pick…</option>
-                          {QUALIFICATION_OPTIONS.filter((o) => !qualifications.includes(o)).map((o) => (
+                          {QUALIFICATION_OPTIONS.filter(
+                            (o) => !qualifications.includes(o),
+                          ).map((o) => (
                             <option key={o}>{o}</option>
                           ))}
                         </select>
-                        <button onClick={addQual}
+                        <button
+                          onClick={addQual}
                           className="text-[10px] font-bold px-2 py-1 rounded"
-                          style={{ background: colors.primary, color: colors.onPrimary, border: "none", cursor: "pointer" }}>
+                          style={{
+                            background: colors.primary,
+                            color: colors.onPrimary,
+                            border: "none",
+                            cursor: "pointer",
+                          }}>
                           Add
                         </button>
-                        <button onClick={() => { setAddingQual(false); setNewQual(""); }}
+                        <button
+                          onClick={() => {
+                            setAddingQual(false);
+                            setNewQual("");
+                          }}
                           className="text-[10px] px-1 py-1 rounded"
-                          style={{ background: "none", color: "#94a3b8", border: "none", cursor: "pointer" }}>
+                          style={{
+                            background: "none",
+                            color: "#94a3b8",
+                            border: "none",
+                            cursor: "pointer",
+                          }}>
                           ✕
                         </button>
                       </div>
@@ -425,10 +715,18 @@ export default function DoctorProfile() {
                       <button
                         onClick={() => setAddingQual(true)}
                         className="text-[10px] font-bold px-2 py-1 rounded border border-dashed transition-colors"
-                        style={{ borderColor: `${colors.primary}40`, color: colors.primary, background: "none", cursor: "pointer" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = `${colors.primary}10`)}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
-                      >
+                        style={{
+                          borderColor: `${colors.primary}40`,
+                          color: colors.primary,
+                          background: "none",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = `${colors.primary}10`)
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "none")
+                        }>
                         + Add
                       </button>
                     )}
@@ -440,12 +738,10 @@ export default function DoctorProfile() {
               <div>
                 <div
                   className="p-4 rounded-xl space-y-3"
-                  style={{ background: `${colors.primaryFixed}60` }}
-                >
+                  style={{ background: `${colors.primaryFixed}60` }}>
                   <div
                     className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider"
-                    style={{ color: colors.primary }}
-                  >
+                    style={{ color: colors.primary }}>
                     <Icon name="award_star" size={15} color={colors.primary} />
                     Specialties
                   </div>
@@ -454,7 +750,9 @@ export default function DoctorProfile() {
                       <SpecialtyChip
                         key={s}
                         label={s}
-                        onRemove={() => setSpecialties((p) => p.filter((x) => x !== s))}
+                        onRemove={() =>
+                          setSpecialties((p) => p.filter((x) => x !== s))
+                        }
                       />
                     ))}
                     {addingSpec ? (
@@ -469,21 +767,37 @@ export default function DoctorProfile() {
                             color: colors.onSurface,
                             boxShadow: `0 0 0 1.5px ${colors.primaryContainer}50`,
                             fontFamily: "Inter",
-                          }}
-                        >
+                          }}>
                           <option value="">Pick…</option>
-                          {SPECIALTY_OPTIONS.filter((o) => !specialties.includes(o)).map((o) => (
+                          {SPECIALTY_OPTIONS.filter(
+                            (o) => !specialties.includes(o),
+                          ).map((o) => (
                             <option key={o}>{o}</option>
                           ))}
                         </select>
-                        <button onClick={addSpec}
+                        <button
+                          onClick={addSpec}
                           className="text-[10px] font-bold px-2 py-1 rounded"
-                          style={{ background: colors.primary, color: colors.onPrimary, border: "none", cursor: "pointer" }}>
+                          style={{
+                            background: colors.primary,
+                            color: colors.onPrimary,
+                            border: "none",
+                            cursor: "pointer",
+                          }}>
                           Add
                         </button>
-                        <button onClick={() => { setAddingSpec(false); setNewSpec(""); }}
+                        <button
+                          onClick={() => {
+                            setAddingSpec(false);
+                            setNewSpec("");
+                          }}
                           className="text-[10px] px-1 py-1 rounded"
-                          style={{ background: "none", color: "#94a3b8", border: "none", cursor: "pointer" }}>
+                          style={{
+                            background: "none",
+                            color: "#94a3b8",
+                            border: "none",
+                            cursor: "pointer",
+                          }}>
                           ✕
                         </button>
                       </div>
@@ -491,10 +805,18 @@ export default function DoctorProfile() {
                       <button
                         onClick={() => setAddingSpec(true)}
                         className="text-[10px] font-bold px-2 py-1 rounded border border-dashed transition-colors"
-                        style={{ borderColor: `${colors.primary}40`, color: colors.primary, background: "none", cursor: "pointer" }}
-                        onMouseEnter={(e) => (e.currentTarget.style.background = `${colors.primary}10`)}
-                        onMouseLeave={(e) => (e.currentTarget.style.background = "none")}
-                      >
+                        style={{
+                          borderColor: `${colors.primary}40`,
+                          color: colors.primary,
+                          background: "none",
+                          cursor: "pointer",
+                        }}
+                        onMouseEnter={(e) =>
+                          (e.currentTarget.style.background = `${colors.primary}10`)
+                        }
+                        onMouseLeave={(e) =>
+                          (e.currentTarget.style.background = "none")
+                        }>
                         + Add
                       </button>
                     )}
@@ -508,11 +830,12 @@ export default function DoctorProfile() {
               <div className="flex items-center justify-between">
                 <h3
                   className="text-xl font-bold tracking-tight"
-                  style={{ fontFamily: "Manrope", color: colors.onSurface }}
-                >
+                  style={{ fontFamily: "Manrope", color: colors.onSurface }}>
                   Professional Biography
                 </h3>
-                <span className="text-xs font-medium" style={{ color: "#94a3b8" }}>
+                <span
+                  className="text-xs font-medium"
+                  style={{ color: "#94a3b8" }}>
                   {autoSaved}
                 </span>
               </div>
@@ -522,19 +845,22 @@ export default function DoctorProfile() {
               <div className="flex items-center justify-between pt-1">
                 <span
                   className="text-xs"
-                  style={{ color: bio.length > 1200 ? colors.error : "#94a3b8" }}
-                >
+                  style={{
+                    color: bio.length > 1200 ? colors.error : "#94a3b8",
+                  }}>
                   {bio.length} / 1500 characters
                 </span>
                 <div
                   className="h-1 rounded-full overflow-hidden flex-1 max-w-[120px] ml-4"
-                  style={{ background: colors.surfaceContainerHigh }}
-                >
+                  style={{ background: colors.surfaceContainerHigh }}>
                   <div
                     className="h-full rounded-full transition-all"
                     style={{
                       width: `${Math.min(100, (bio.length / 1500) * 100)}%`,
-                      background: bio.length > 1200 ? colors.error : colors.primaryContainer,
+                      background:
+                        bio.length > 1200
+                          ? colors.error
+                          : colors.primaryContainer,
                     }}
                   />
                 </div>
@@ -544,21 +870,6 @@ export default function DoctorProfile() {
 
           {/* ── Footer actions ── */}
           <footer className="flex items-center justify-end gap-4">
-            <button
-              onMouseEnter={() => setCancelHov(true)}
-              onMouseLeave={() => setCancelHov(false)}
-              className="px-7 py-3 rounded-lg font-bold text-sm transition-colors"
-              style={{
-                background: cancelHov ? colors.surfaceContainerHighest : colors.surfaceContainerHigh,
-                color: colors.onSurface,
-                border: "none",
-                cursor: "pointer",
-                fontFamily: "Manrope",
-              }}
-            >
-              Cancel
-            </button>
-
             <button
               onMouseEnter={() => setSaveHov(true)}
               onMouseLeave={() => setSaveHov(false)}
@@ -571,14 +882,20 @@ export default function DoctorProfile() {
                 border: "none",
                 cursor: saving ? "not-allowed" : "pointer",
                 fontFamily: "Manrope",
-                boxShadow: saveHov ? `0 8px 24px ${colors.primary}40` : `0 4px 12px ${colors.primary}25`,
+                boxShadow: saveHov
+                  ? `0 8px 24px ${colors.primary}40`
+                  : `0 4px 12px ${colors.primary}25`,
                 transform: saveHov && !saving ? "scale(1.02)" : "scale(1)",
                 opacity: saving ? 0.8 : 1,
-              }}
-            >
+              }}>
               {saving ? (
                 <>
-                  <Icon name="refresh" size={17} color={colors.onPrimary} className="spin" />
+                  <Icon
+                    name="refresh"
+                    size={17}
+                    color={colors.onPrimary}
+                    className="spin"
+                  />
                   Saving…
                 </>
               ) : (
@@ -592,7 +909,7 @@ export default function DoctorProfile() {
         </div>
       </main>
 
-      <Toast visible={showToast} />
+      <Toast visible={showToast.visible} msg={showToast.msg} />
     </>
   );
 }

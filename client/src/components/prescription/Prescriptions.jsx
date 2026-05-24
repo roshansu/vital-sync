@@ -4,7 +4,9 @@ import PrescriptionCard from "./PrescriptionCard";
 import Pagination from "../Pagination";
 import { ALL_PRESCRIPTIONS } from "../../constant/constData";
 import Icon from "../appointment/Icon";
-import FilterDropdown from "../FilterDropdown";
+// import FilterDropdown from "../FilterDropdown";
+import apiCall from "../../api/apiCall";
+import LoadingSpinner from "../LoadingSpinner";
 
 const PER_PAGE = 4;
 const TIME_FILTERS = ["All Time", "This Month", "Past 3 Months"];
@@ -27,8 +29,9 @@ const SORT_OPTIONS = [
   "Doctor Z–A",
 ];
 
-export default function Prescriptions({ setCurrNav }) {
+export default function Prescriptions({ setCurrNav, setPrescriptionData }) {
   const [timeFilter, setTimeFilter] = useState("This Month");
+  const [data, setData] = useState([])
   const [search, setSearch] = useState("");
   const [searchFocused, setSearchFocused] = useState(false);
   const [showFilter, setShowFilter] = useState(false);
@@ -38,9 +41,28 @@ export default function Prescriptions({ setCurrNav }) {
     specialty: "All Specialties",
     sort: "Newest First",
   });
+  const [loading, setLoading] = useState(true)
 
   const filterRef = useRef(null);
-  console.log(setCurrNav);
+  // console.log(setCurrNav);
+
+  async function getData() {
+    setLoading(true)
+    try{
+       const res = await apiCall('/patient/prescription', "GET")
+       if(res.success && res?.data){
+        setData(res.data)
+        // setPrescriptionData(res.data)
+       }
+    }catch(err){
+
+    }
+    setLoading(false)
+  }
+
+  useEffect(()=>{
+    getData()
+  }, [])
 
   // Close filter on outside click
   useEffect(() => {
@@ -54,36 +76,33 @@ export default function Prescriptions({ setCurrNav }) {
   }, []);
 
   // Reset page on filter/search change
-  useEffect(() => {
-    setPage(1);
-  }, [search, filters, timeFilter]);
 
   // Apply filters
-  const filtered = ALL_PRESCRIPTIONS.filter((rx) => {
-    const q = search.toLowerCase();
-    const matchSearch =
-      !q ||
-      rx.doctor.toLowerCase().includes(q) ||
-      rx.diagnosis.toLowerCase().includes(q) ||
-      rx.specialty.toLowerCase().includes(q);
+  // const filtered = ALL_PRESCRIPTIONS.filter((rx) => {
+  //   const q = search.toLowerCase();
+  //   const matchSearch =
+  //     !q ||
+  //     rx.doctor.toLowerCase().includes(q) ||
+  //     rx.diagnosis.toLowerCase().includes(q) ||
+  //     rx.specialty.toLowerCase().includes(q);
 
-    const matchStatus =
-      filters.status === "All Statuses" || rx.status === filters.status;
+  //   const matchStatus =
+  //     filters.status === "All Statuses" || rx.status === filters.status;
 
-    const matchSpecialty =
-      filters.specialty === "All Specialties" ||
-      rx.specialty === filters.specialty;
+  //   const matchSpecialty =
+  //     filters.specialty === "All Specialties" ||
+  //     rx.specialty === filters.specialty;
 
-    return matchSearch && matchStatus && matchSpecialty;
-  }).sort((a, b) => {
-    if (filters.sort === "Doctor A–Z") return a.doctor.localeCompare(b.doctor);
-    if (filters.sort === "Doctor Z–A") return b.doctor.localeCompare(a.doctor);
-    if (filters.sort === "Oldest First") return a.id - b.id;
-    return b.id - a.id; // Newest First (default)
-  });
+  //   return matchSearch && matchStatus && matchSpecialty;
+  // }).sort((a, b) => {
+  //   if (filters.sort === "Doctor A–Z") return a.doctor.localeCompare(b.doctor);
+  //   if (filters.sort === "Doctor Z–A") return b.doctor.localeCompare(a.doctor);
+  //   if (filters.sort === "Oldest First") return a.id - b.id;
+  //   return b.id - a.id; // Newest First (default)
+  // });
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
-  const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
+  // const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+  // const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
   // Active filter count (for badge)
   const activeFilterCount = [
@@ -91,6 +110,8 @@ export default function Prescriptions({ setCurrNav }) {
     filters.specialty !== "All Specialties",
     filters.sort !== "Newest First",
   ].filter(Boolean).length;
+
+  if(loading) return<LoadingSpinner/>
 
   return (
     <>
@@ -134,8 +155,8 @@ export default function Prescriptions({ setCurrNav }) {
 
             {/* Time filter + filter button */}
 
-          <div className="flex items-center gap-3 flex-wrap">
-            {/* Time tabs */}
+          {/* <div className="flex items-center gap-3 flex-wrap">
+
             <div
               className="flex items-center p-1 rounded-xl"
               style={{ background: colors.surfaceContainerLow }}
@@ -162,7 +183,6 @@ export default function Prescriptions({ setCurrNav }) {
               })}
             </div>
 
-            {/* More Filters */}
             <div className="relative" ref={filterRef}>
               <button
                 onClick={() => setShowFilter((p) => !p)}
@@ -195,11 +215,11 @@ export default function Prescriptions({ setCurrNav }) {
                 />
               )}
             </div>
-          </div>
+          </div> */}
           </div>
 
           {/* ── Search bar ── */}
-          <div
+          {/* <div
             className="flex items-center gap-3 rounded-xl px-4 py-3 mb-6 transition-all"
             style={{
               background: colors.surfaceContainerLowest,
@@ -240,13 +260,13 @@ export default function Prescriptions({ setCurrNav }) {
                 </button>
               </>
             )}
-          </div>
+          </div> */}
 
           {/* ── Cards ── */}
-          {paginated.length > 0 ? (
+          {data.length > 0 ? (
             <div className="grid grid-cols-1 gap-4 mb-10">
-              {paginated.map((rx) => (
-                <PrescriptionCard key={rx.id} rx={rx} setCurrNav={setCurrNav} />
+              {data.map((rx) => (
+                <PrescriptionCard setPrescriptionData={setPrescriptionData} key={rx._id} rx={rx} setCurrNav={setCurrNav} />
               ))}
             </div>
           ) : (
@@ -272,30 +292,11 @@ export default function Prescriptions({ setCurrNav }) {
                   ? `No results for "${search}"`
                   : "Try adjusting your filters."}
               </p>
-              <button
-                onClick={() => {
-                  setSearch("");
-                  setFilters({
-                    status: "All Statuses",
-                    specialty: "All Specialties",
-                    sort: "Newest First",
-                  });
-                }}
-                className="mt-6 px-5 py-2.5 text-sm font-bold rounded-lg transition-opacity hover:opacity-80"
-                style={{
-                  background: `linear-gradient(135deg, ${colors.primary} 0%, ${colors.primaryContainer} 100%)`,
-                  color: colors.onPrimary,
-                  border: "none",
-                  cursor: "pointer",
-                  fontFamily: "Manrope",
-                }}>
-                Clear All Filters
-              </button>
             </div>
           )}
 
           {/* ── Pagination + count ── */}
-          <div className="flex items-center justify-between mt-4">
+          {/* <div className="flex items-center justify-between mt-4">
             <p
               className="text-sm font-medium"
               style={{ color: colors.onSurfaceVariant }}>
@@ -311,7 +312,7 @@ export default function Prescriptions({ setCurrNav }) {
               prescriptions
             </p>
             <Pagination page={page} totalPages={totalPages} setPage={setPage} />
-          </div>
+          </div> */}
         </div>
       </main>
     </>

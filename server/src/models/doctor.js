@@ -8,8 +8,22 @@ const doctorSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
-  specialization: {
+  patientList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Patient'
+    }
+  ],
+  available: {
+    type: Boolean,
+    default: false
+  },
+  license: {
     type: String,
+    maxLength: 40
+  },
+  specialization: {
+    type: [String],
     minLength: 3,
     maxLength: 40,
     required: true,
@@ -19,15 +33,13 @@ const doctorSchema = new mongoose.Schema({
     default: false
   },
   qualification: {
-    type: String,
+    type: [String],
     minLength: 3,
     maxLength: 40,
     required: true,
   },
   experience: {
     type: String,
-    minLength: 1,
-    maxLength: 10,
   },
 });
 

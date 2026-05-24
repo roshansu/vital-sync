@@ -2,7 +2,8 @@ import { useState } from "react";
 import { userAuth } from "../../api/userAuth";
 import { Link } from "react-router-dom";
 import Field from "../../components/Field";
-import SuccessModal from "../../components/SuccessModal";
+// import SuccessModal from "../../components/SuccessModal";
+import Toast from "../../components/form/Toast";
 import Icon from "../../components/Icon";
 import getStrength from "../../constant/getStrength";
 import QualificationPicker from "../../components/QualificationPicker";
@@ -30,8 +31,7 @@ export default function SignUp() {
   const [agreed, setAgreed] = useState(false);
   const [showModal, setShowModal] = useState({
     show: false,
-    type: "pending",
-    message: "Please wait..."
+    message: "",
   });
   const [focused, setFocused] = useState(null);
   const [specialization, setSpecialization] = useState("");
@@ -70,7 +70,6 @@ export default function SignUp() {
       setShowModal({
         show: true,
         message: "Please wait...",
-        type: "pending"
       });
 
     let updatedData = {
@@ -92,25 +91,21 @@ export default function SignUp() {
 
     const data = await userAuth('/user/register', updatedData)
 
-    if(data?.success){
-      setShowModal({
-        show: true,
-        message: data?.message ,
-        type: "success"
-      });
-      setUserData(data?.userData)
-      navigate(`/${data?.userData?.role}`)
-    }
-    else{
-        setShowModal({
-        show: true,
-        message: data.message,
-        type: "error"
-    });
-    }
+    setShowModal({
+      show: true,
+      message: data.message
+    })
+      if(data.success){
+        setUserData(data?.userData)
+        navigate(`/${data?.userData?.role}`)
+      }
 
     setFormData(updatedData); // update state
-
+    setTimeout(() => {
+      setShowModal({
+        show: false,
+      })
+    }, 3000);
   };
   
 
@@ -598,7 +593,7 @@ export default function SignUp() {
               </div>
 
               {/* Submit */}
-              <div className="pt-2">
+              { showModal.show?'': <div className="pt-2">
                 <button
                   type="submit"
                   className="w-full py-4 rounded-xl font-bold text-sm hover:opacity-90 transition-all active:scale-[0.98]"
@@ -613,7 +608,7 @@ export default function SignUp() {
                   }}>
                   Create Account
                 </button>
-              </div>
+              </div> }
             </form>
 
             {/* Sign-in link */}
@@ -632,9 +627,7 @@ export default function SignUp() {
         </section>
       </main>
 
-      {showModal.show && <SuccessModal message={showModal.message}
-      type={showModal.type}
-      onClose={() => setShowModal(false)} />}
+   <Toast visible={showModal.show} msg={showModal.message} />
     </>
   );
 }

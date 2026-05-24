@@ -11,7 +11,7 @@ const LIFESTYLE = [
   "Monitor blood pressure every morning and log it.",
 ];
 
-export default function PrescriptionDetail({ setCurrNav }) {
+export default function PrescriptionDetail({ setCurrNav, prescriptionData }) {
   const [printHovered, setPrintHovered]       = useState(false);
   const [downloadHovered, setDownloadHovered] = useState(false);
   const [backHovered, setBackHovered]         = useState(false);
@@ -61,17 +61,10 @@ export default function PrescriptionDetail({ setCurrNav }) {
                 className="hidden sm:block h-4 w-px"
                 style={{ background: `${colors.outlineVariant}50` }}
               />
-              <span
-                className="hidden sm:inline text-sm font-medium"
-                style={{ color: "#94a3b8" }}
-              >
-                Prescription ID:{" "}
-                <span style={{ color: colors.onSurface, fontWeight: 600 }}>#RX-2024-8842</span>
-              </span>
             </div>
 
             {/* Print + Download */}
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <button
                 onMouseEnter={() => setPrintHovered(true)}
                 onMouseLeave={() => setPrintHovered(false)}
@@ -107,7 +100,7 @@ export default function PrescriptionDetail({ setCurrNav }) {
                 <Icon name="download" size={18} color={colors.onPrimary} />
                 <span>Download PDF</span>
               </button>
-            </div>
+            </div> */}
           </div>
 
           {/* ── Header Bento ── */}
@@ -139,8 +132,8 @@ export default function PrescriptionDetail({ setCurrNav }) {
                 }}
               >
                 <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCFRhNY6mFsmmmxn23qeJajBkZE6bLFwEOAmGxXi_zT07LUap5Fi2TzS2ijq9BRyCyoCtcxQVcQs8HQ_mxD8mHSAaYV2ef-oq_ogkocbzPtOFKiuugumA9NADmtog1nyXbDonWjqnYHed3WYdtnoDXuivKKvx1BEgEq_64r9Id5Ym9zbka9-xuYPnKHbNOBxDnvO0atPleR5AWnI-aGlvcChZySPZvirmtuvrOQeKdiWvLxYrOOdY-bc4XBpksPQE7Sn05afsxNypwe"
-                  alt="Dr. Alistair Vance"
+                  src={prescriptionData.doctor?.imageUrl || "https://img.magnific.com/free-vector/user-circles-set_78370-4704.jpg"}
+                  alt={prescriptionData.doctor.firstName}
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -151,17 +144,17 @@ export default function PrescriptionDetail({ setCurrNav }) {
                   className="text-2xl md:text-3xl font-extrabold tracking-tight mb-1"
                   style={{ fontFamily: "Manrope", color: colors.onSurface }}
                 >
-                  Dr. Alistair Vance
+                  Dr. {prescriptionData.doctor.firstName+" "+prescriptionData.doctor.lastName}
                 </h1>
                 <p
                   className="text-xs font-bold uppercase tracking-wider mb-4"
                   style={{ color: colors.primary }}
                 >
-                  Senior Cardiologist · MD, Ph.D.
+                  {prescriptionData.doctor.doctorId?.specialization[0]} · {prescriptionData.doctor.doctorId?.qualification[0]}.
                 </p>
                 <div className="flex flex-wrap items-center gap-4 md:gap-6">
                   {[
-                    { icon: "calendar_month", label: "Issued: Oct 24, 2023" },
+                    { icon: "calendar_month", label: `Issued: ${new Date(prescriptionData.createdAt).toDateString()} ` },
                     { icon: "schedule",       label: "Validity: 30 Days"    },
                   ].map(({ icon, label }) => (
                     <div key={label} className="flex items-center gap-1.5">
@@ -200,7 +193,7 @@ export default function PrescriptionDetail({ setCurrNav }) {
                 </span>
               </div>
               <p className="text-xs italic" style={{ color: "#94a3b8" }}>
-                Digitally signed via Clinical Atelier Secure Vault
+                Digitally signed
               </p>
             </div>
           </div>
@@ -234,7 +227,7 @@ export default function PrescriptionDetail({ setCurrNav }) {
                   color: colors.primary,
                 }}
               >
-                {MEDICINES.length} Items Prescribed
+                {prescriptionData.medicines.length} Items Prescribed
               </span>
             </div>
 
@@ -266,8 +259,8 @@ export default function PrescriptionDetail({ setCurrNav }) {
                 <tbody
                   style={{ borderTop: `1px solid ${colors.outlineVariant}15` }}
                 >
-                  {MEDICINES.map((med, idx) => (
-                    <MedicineRow key={med.id} med={med} isLast={idx === MEDICINES.length - 1} />
+                  {prescriptionData.medicines.map((med, idx) => (
+                    <MedicineRow key={med.id} med={med} isLast={idx === prescriptionData.medicines.length - 1} />
                   ))}
                 </tbody>
               </table>
@@ -298,9 +291,7 @@ export default function PrescriptionDetail({ setCurrNav }) {
                 className="text-sm leading-relaxed font-medium"
                 style={{ color: "#475569" }}
               >
-                Please ensure you take Lisinopril on an empty stomach, at least 1 hour before
-                breakfast, to maximize absorption. Stay hydrated throughout the day. Avoid
-                grapefruit juice as it may interfere with the statin efficacy.
+                {prescriptionData.instructions}
               </p>
             </div>
 
@@ -323,7 +314,7 @@ export default function PrescriptionDetail({ setCurrNav }) {
                 </h3>
               </div>
               <ul className="space-y-3">
-                {LIFESTYLE.map((tip) => (
+                {prescriptionData.dietTags.map((tip) => (
                   <li key={tip} className="flex items-start gap-2">
                     <Icon
                       name="check_circle"
@@ -342,43 +333,6 @@ export default function PrescriptionDetail({ setCurrNav }) {
           </div>
 
           {/* ── Footer Meta ── */}
-          <div
-            className="pt-6 md:pt-8 mt-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
-            style={{
-              borderTop: `1px solid ${colors.outlineVariant}40`,
-              opacity: 0.6,
-            }}
-          >
-            <div className="flex items-center gap-4">
-              <img
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAyqU1B3hLnBsWdPgHqJMK_BZl-m8kIF3HOxNXeqrYbG4qYAGUlkLwpek12SXskUIT4Dfd1LDZU1kU7wzZOjmgawe_aPV7mjleVa8t6-hH5jTBzfYdvCPLpq7pe8pp9Usb2XpHWxQQ43lluj_E93l3vfcLfnQAsIT0VFv4D8ph5m0v91-B-ns-rrV2V4qeO2Qbpk3IGqapcUK-eBscB0I96NTirY9LgQHu39IT_SX4WhyeKsGsmhT1Zx_9vfysLfRs_xtW1YQRA7pdu"
-                alt="Clinic Logo"
-                className="w-10 h-10 grayscale"
-              />
-              <div>
-                <p
-                  className="text-[10px] font-bold uppercase tracking-widest"
-                  style={{ color: colors.onSurface }}
-                >
-                  The Clinical Atelier Laboratory
-                </p>
-                <p className="text-[10px] font-medium" style={{ color: "#94a3b8" }}>
-                  221B Baker Street, London, UK
-                </p>
-              </div>
-            </div>
-            <div className="text-left sm:text-right">
-              <p
-                className="text-[10px] font-bold uppercase tracking-widest"
-                style={{ color: colors.onSurface }}
-              >
-                Verified Digital Record
-              </p>
-              <p className="text-[10px] font-medium" style={{ color: "#94a3b8" }}>
-                Timestamp: 2024-05-15T10:30:00Z
-              </p>
-            </div>
-          </div>
         </div>
       </main>
     </>

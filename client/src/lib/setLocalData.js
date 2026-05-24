@@ -12,5 +12,5 @@ export const getUserData = ()=>{
 
 export const clearUserData = ()=>{
     localStorage.clear()
-    navigate('/')
+    window.location.href = '/'
 }

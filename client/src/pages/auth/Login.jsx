@@ -3,13 +3,14 @@ import { useState } from "react";
 import { userAuth } from "../../api/userAuth";
 import { Link } from "react-router-dom";
 import Field from "../../components/Field";
-import SuccessModal from "../../components/SuccessModal";
+// import SuccessModal from "../../components/SuccessModal";
 import Icon from "../../components/Icon";
 import getStrength from "../../constant/getStrength";
 import { colors } from "../../constant/style";
 import { setUserData, getUserData } from "../../lib/setLocalData";
 import Redirect from "../../components/Redirect";
 import { useNavigate } from "react-router-dom";
+import Toast from "../../components/form/Toast";
 
 export default function Login() {
   const [role, setRole] = useState("Patient");
@@ -20,7 +21,6 @@ export default function Login() {
   const [agreed, setAgreed] = useState(false);
   const [showModal, setShowModal] = useState({
     show: false,
-    type: "pending",
     message: "Please wait..."
   });
   const [focused, setFocused] = useState(null);
@@ -46,7 +46,6 @@ export default function Login() {
       setShowModal({
         show: true,
         message: "Please wait...",
-        type: "pending"
       });
     const updatedData = {
       email, password
@@ -55,23 +54,20 @@ export default function Login() {
 
     const data = await userAuth('/user/login', updatedData)
 
-    if(data.success){
       setShowModal({
         show: true,
         message: data.message,
-        type: "success"
       });
+
+    if(data.success){
       setUserData(data.userData)
       navigate(`/${data?.userData?.role}`)
-      
     }
-    else{
-        setShowModal({
-        show: true,
-        message: data.message,
-        type: "error"
-    });
-    }
+    setTimeout(() => {
+      setShowModal({
+        show: false
+      })
+    }, 3000);
 
   };
   
@@ -327,7 +323,7 @@ export default function Login() {
               </div>
 
               {/* Submit */}
-              <div className="pt-2">
+              { showModal.show?'': <div className="pt-2">
                 <button
                   type="submit"
                   className="w-full py-4 rounded-xl font-bold text-sm hover:opacity-90 transition-all active:scale-[0.98]"
@@ -342,7 +338,7 @@ export default function Login() {
                   }}>
                   Login
                 </button>
-              </div>
+              </div> }
             </form>
 
             {/* Sign-in link */}
@@ -361,9 +357,7 @@ export default function Login() {
         </section>
       </main>
 
-      {showModal.show && <SuccessModal message={showModal.message}
-      type={showModal.type}
-      onClose={() => setShowModal(false)} />}
+      <Toast msg={showModal.message} visible={showModal.show}/>
     </>
   );
 }
