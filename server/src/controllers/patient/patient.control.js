@@ -2,6 +2,8 @@ import PatientStats from '../../models/patientStats.js'
 import Address from '../../models/address.js'
 import Patient from '../../models/patient.js'
 import User from '../../models/user.js';
+import compressImage from '../../utils/compressImage.js';
+import uploadToCloudinary from '../../utils/uploadToCloudinary.js';
 
 export const getPatientStats = async (req, res) => {
     try {
@@ -136,6 +138,45 @@ export const getPatientProfile = async(req, res)=>{
             message: "Profile found",
             data
         })
+    }catch(err){
+        res.status(500).json({
+            success: false,
+            message: err.message
+        })
+    }
+}
+
+export const updatePhoto = async(req, res)=>{
+    try{
+
+        const userId = req.user._id
+
+            let imageUrl =''
+
+            if (req.file) {
+              const compressedBuffer = await compressImage(
+                req.file.buffer,
+                req.file.size,
+              );
+
+              const uploadedImage = await uploadToCloudinary(
+                compressedBuffer,
+                "profile-images",
+              );
+        
+              imageUrl = uploadedImage.url
+            //   console.log("upload image",uploadedImage)
+            }
+
+            await User.findByIdAndUpdate(userId,{
+                imageUrl
+            })
+
+        res.status(200).json({
+            success: true,
+            message: "Picture changed"
+        })
+
     }catch(err){
         res.status(500).json({
             success: false,

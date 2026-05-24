@@ -80,7 +80,7 @@ const INITIAL_APPOINTMENTS = [
 const STATUS_TABS = ["All", "pending", "approved", "completed", "rejected"];
 
 
-export default function ManageAppointments() {
+export default function ManageAppointments({setCurrNav}) {
   const [appointments, setAppointments] = useState([]);
   const [activeTab,    setActiveTab]    = useState("All");
   const [rescheduleAppt, setRescheduleAppt] = useState(null);
@@ -333,7 +333,7 @@ export default function ManageAppointments() {
                     transition: `opacity 0.5s ease ${idx * 80}ms, transform 0.5s cubic-bezier(0.16,1,0.3,1) ${idx * 80}ms`,
                   }}
                 >
-                  <AppointmentRow
+                  <AppointmentRow setCurrNav={setCurrNav}
                     appt={appt} patientId={appt.patient._id}
                     visible={visible}
                     onApprove={handleApprove}

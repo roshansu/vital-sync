@@ -195,7 +195,7 @@ export const getStats = async (req, res) => {
         ],
       }),
 
-      Appointment.findOne({doctorId}).select('date time status type patient').populate('patient', 'firstName lastName'),
+      Appointment.find({doctorId}).select('date time status type patient').populate('patient', 'firstName lastName'),
 
       DoctorStats.findOne({doctorId})
       

@@ -2,10 +2,11 @@ import { colors } from "../../constant/style";
 import Icon from "../appointment/Icon";
 import { useState } from "react";
 
-export default function AppointmentRow({ appt }) {
+export default function AppointmentRow({ appt, setCurrNav }) {
   const [hovered, setHovered] = useState(false);
   return (
     <div
+    onClick={()=>setCurrNav('appointments')}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
       className="flex items-center justify-between p-3 md:p-4 rounded-xl border transition-all"
@@ -18,15 +19,15 @@ export default function AppointmentRow({ appt }) {
         {/* Date chip */}
         <div
           className="w-11 h-11 md:w-12 md:h-12 rounded-xl flex flex-col items-center justify-center flex-shrink-0"
-          style={{ background: appt.dateStyle.bg, color: appt.dateStyle.color }}
+          style={{ background: colors.primaryFixed, color: colors.primary }}
         >
-          <span className="text-[9px] font-bold uppercase leading-none">{appt.month}</span>
-          <span className="text-lg font-bold leading-none mt-0.5">{appt.day}</span>
+          <span className="text-[9px] font-bold uppercase leading-none">{new Date(appt.date).toLocaleString("default",{ month: "short" })}</span>
+          <span className="text-lg font-bold leading-none mt-0.5">{new Date(appt.date).getDay()+1}</span>
         </div>
 
         <div className="min-w-0">
           <h4 className="font-bold text-sm truncate" style={{ color: colors.onSurface }}>
-            {appt.patient}
+            {appt.patient.firstName+" "+appt.patient.lastName}
           </h4>
           <div className="flex items-center gap-3 mt-1 flex-wrap">
             <span
@@ -40,7 +41,7 @@ export default function AppointmentRow({ appt }) {
               className="flex items-center gap-1 text-[11px] font-medium"
               style={{ color: colors.outline }}
             >
-              <Icon name={appt.typeIcon} size={13} color={colors.outline} />
+              <Icon name={appt.type === "online" ? "videocam" : "location_on"} size={13} color={colors.outline} />
               {appt.type}
             </span>
           </div>
@@ -50,7 +51,7 @@ export default function AppointmentRow({ appt }) {
       <div className="flex flex-col items-end gap-2 ml-2 flex-shrink-0">
         <span
           className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider whitespace-nowrap"
-          style={{ background: appt.statusStyle.bg, color: appt.statusStyle.color }}
+          style={{ background: `${colors.primary}14`, color: colors.primary }}
         >
           {appt.status}
         </span>

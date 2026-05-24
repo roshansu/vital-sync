@@ -5,7 +5,7 @@ import StatusBadge from './StatusBadge'
 import { useState } from "react";
 import Icon from "../appointment/Icon";
 
-export default function AppointmentRow({ appt, patientId, onApprove, onReject, onComplete, onReschedule, visible }) {
+export default function AppointmentRow({ appt, setCurrNav, patientId, onApprove, onReject, onComplete, onReschedule, visible }) {
   // console.log("apppt",appt)
   
   const [hovered, setHovered] = useState(false);
@@ -121,7 +121,7 @@ export default function AppointmentRow({ appt, patientId, onApprove, onReject, o
         {isApproved && (
           <>
             <button
-              onClick={() => {}}
+              onClick={() => setCurrNav('patients')}
               className="px-4 py-2 text-sm font-bold rounded-lg border transition-colors"
               style={{
                 color: colors.primary,

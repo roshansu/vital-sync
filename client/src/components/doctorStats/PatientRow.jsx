@@ -1,9 +1,9 @@
 import { colors } from "../../constant/style";
 import { useState  } from "react";
 
-export default function PatientRow({ patient }) {
+export default function PatientRow({ patient, setCurrNav }) {
   const [hovered, setHovered] = useState(false);
-  const initials = patient.name.split(" ").map((w) => w[0]).slice(0, 2).join("");
+  const initials = patient?.userId?.firstName.split(" ").map((w) => w[0]).slice(0, 2).join("");
 
   return (
     <div
@@ -13,10 +13,10 @@ export default function PatientRow({ patient }) {
       style={{ background: hovered ? colors.surfaceContainerLow : "transparent" }}
     >
       <div className="flex items-center gap-3 md:gap-4 min-w-0">
-        {patient.img ? (
+        {patient.imageUrl ? (
           <img
-            src={patient.img}
-            alt={patient.name}
+            src={patient?.userId?.imageUrl}
+            alt={patient?.userId?.firstName}
             className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover flex-shrink-0"
           />
         ) : (
@@ -36,24 +36,21 @@ export default function PatientRow({ patient }) {
             className="font-bold text-sm truncate"
             style={{ color: colors.onSurface }}
           >
-            {patient.name}
+            {patient?.userId?.firstName}
           </h4>
           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
             <span className="text-xs font-medium" style={{ color: colors.outline }}>
-              {patient.age}y {patient.gender}
+              {patient?.userId?.dob}y {patient?.userId?.gender}
             </span>
             <span
               className="w-1 h-1 rounded-full"
               style={{ background: colors.outlineVariant }}
             />
-            <span className="text-xs font-medium" style={{ color: colors.outline }}>
-              {patient.date}
-            </span>
           </div>
         </div>
       </div>
 
-      <button
+      <button onClick={()=>setCurrNav('patients')}
         className="ml-3 flex-shrink-0 px-3 py-1.5 rounded-lg text-xs font-bold transition-all"
         style={{
           background: hovered

@@ -12,7 +12,7 @@ import SectionHeader from './SectionHeader'
 import FooterAction from './FooterAction'
 import apiCall from "../../api/apiCall";
 import LoadingSpinner from "../LoadingSpinner";
-import { useEffect } from "react";
+import { useEffect,useRef } from "react";
 
 export default function ProfileSettings() {
   // Personal info — only gender & dob editable
@@ -20,7 +20,10 @@ export default function ProfileSettings() {
   const [dob, setDob]           = useState("1992-05-14");
 
   const [loading, setLoading] = useState(true)
-
+  const [image, setImage] = useState();
+  const [profileImage, setProfileImage] = useState(
+    "https://lh3.googleusercontent.com/aida-public/AB6AXuAg-T5eeVUNI6vWuxVOT95QRRIAzHsXG8Ouva7v_7sl1g-EmnX37QmzrbvYoVPH9voVghqHjj3pnR-IIKW15lkI9-PxF79vxnO34QMX0vIcjeUImtdvrs9tr0ln4fZyXA93BJ6FA6lras0Ao9s8Z9JVwAElNYvly_i5J9aeylsekairYRpc4ZA6WN4TQftjYdJclE3SgLTETuaxDkzT6L1gIb4JrhrxlMFj1Pl9Pk5TFElX81qh6P6lBXCwX0UfNC8G0VPGxyi_lB2l",
+  );
   // Bio (editable)
   const [bio, setBio] = useState(
     "Regular outpatient since 2022. Managing mild hypertension and seasonal allergies. Very active lifestyle, high health literacy."
@@ -30,7 +33,7 @@ export default function ProfileSettings() {
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
-  const [image, setImage] = useState('')
+  // const [image, setImage] = useState('')
   // Medical info
   const [bloodGroup, setBloodGroup]   = useState("O Positive (O+)");
   const [conditions, setConditions]   = useState("Hypertension");
@@ -41,6 +44,12 @@ export default function ProfileSettings() {
   const [allergies, setAllergies] = useState(["Peanuts", "Penicillin"]);
   const [newAllergy, setNewAllergy]   = useState("");
   const [addingAllergy, setAddingAllergy] = useState(false);
+  const fileInputRef = useRef(null);
+
+  const [show, setShow] = useState({
+    show: false,
+    msg: ''
+  })
 
   // Address
   const [address, setAddress] = useState({
@@ -62,6 +71,45 @@ export default function ProfileSettings() {
     msg: ''
   });
   const [saveHovered, setSaveHovered] = useState(false);
+
+
+    const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleImageChange = async (e) => {
+    const file = e.target.files[0];
+
+    setShowToast({
+      visible: true,
+      msg: "Changing picture..."
+    })
+
+    if (file) {
+      // Create preview URL
+      const imageUrl = URL.createObjectURL(file);
+      setImage(file);
+      // Update image preview
+      const formData = new FormData()
+      formData.append('image', file)
+      setProfileImage(imageUrl);
+      const res = await apiCall('/patient/profile', "PUT", formData, "multipart/form-data")
+      setShowToast({
+        visible: true,
+        msg: res.message
+      })
+      console.log(file);
+    }
+
+    setTimeout(() => {
+    setShowToast({
+      visible: false
+    })
+    }, 3000);
+
+
+  };
+
 
   async function getData() {
     try{
@@ -96,7 +144,7 @@ export default function ProfileSettings() {
         setEmail(data?.userId?.email)
         setPhone(data?.userId?.phone)
         setBio(data?.userId?.bio)
-        setImage(data?.userId?.imageUrl)
+        setProfileImage(data?.userId?.imageUrl)
       }
     }catch(err){
     }
@@ -264,12 +312,12 @@ export default function ProfileSettings() {
                 style={{ ringColor: colors.surface }}
               >
                 <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAR0qRVluOXVPe_Ua1uoPOIfr5MFDtfnbkmygfLdU-EspXByAOZ9isHvpEhRVQDbxlv3PlMJ7e_7tvcBx0BpdlpHoV3nsfg10MnVhuwBtn7lR_ZZpoCnS8MDpWBc5Xi2i6Lpa_qoNEfW-Kq5z5q74oSpSjH5KUf9vddBqp8x4iLpRJd96N0wwPxsUA2-MjWbcGwaBEYW6BzHPQiMxbLfrW7gfIKm2xGaAySoI_RGcVKXHd5UTIg4hAbTwDjKFGjk-exO09vxYJ1pD5N"
+                  src={profileImage}
                   alt="Patient Avatar"
                   className="w-full h-full object-cover"
                 />
               </div>
-              <button
+              <button onClick={handleImageClick}
                 className="absolute -bottom-2 -right-2 w-9 h-9 rounded-full flex items-center justify-center border-4 shadow-lg transition-transform hover:scale-105"
                 style={{
                   background: colors.primary,
@@ -279,6 +327,14 @@ export default function ProfileSettings() {
               >
                 <Icon name="photo_camera" size={15} color={colors.onPrimary} />
               </button>
+
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageChange}
+                className="hidden"
+              />
             </div>
 
             {/* Bio fields */}

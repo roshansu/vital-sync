@@ -15,7 +15,7 @@ const DoctorPage = () => {
         dashboard: <DoctorDashboard setCurrNav={setCurrNav} />,
         schedule: <ScheduleManagement setCurrNav={setCurrNav} />,
         profile: <DoctorProfile/>,
-        appointments: <ManageAppointments/>,
+        appointments: <ManageAppointments setCurrNav={setCurrNav} />,
         patients: <PatientManagement/>
         
     }
