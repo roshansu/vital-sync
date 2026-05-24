@@ -8,6 +8,12 @@ const doctorSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
   },
+  patientList: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Patient'
+    }
+  ],
   available: {
     type: Boolean,
     default: false

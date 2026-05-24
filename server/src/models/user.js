@@ -8,9 +8,30 @@ const userSchema = new mongoose.Schema({
     minLength: 3,
     maxLength: 40,
   },
+  dob: String,
   bio:{
     type: String,
     maxLength: 500
+  },
+  isApproved:{
+    type: Boolean,
+    default: false,
+  },
+  patientId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Patient'
+  },
+  doctorId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Doctor'
+  },
+  addressId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Address',
+  },
+  gender: {
+    type: String,
+    default: 'Male'
   },
   lastName: {
     type: String,

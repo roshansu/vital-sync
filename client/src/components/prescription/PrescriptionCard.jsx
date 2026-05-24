@@ -3,11 +3,15 @@ import { colors } from "../../constant/style";
 import Icon from "../appointment/Icon";
 
 
-export default function PrescriptionCard({ rx, setCurrNav }) {
+export default function PrescriptionCard({ rx, setCurrNav, setPrescriptionData }) {
   const [viewHovered, setViewHovered]     = useState(false);
   const [dlHovered, setDlHovered]         = useState(false);
   const [cardHovered, setCardHovered]     = useState(false);
-  const isActive = rx.status === "Active";
+  const isActive = true;
+  function handleDetail(){
+    setPrescriptionData(rx)
+    setCurrNav('prescriptionDetail')
+  }
 
   return (
     <div
@@ -40,7 +44,7 @@ export default function PrescriptionCard({ rx, setCurrNav }) {
               className="text-lg font-bold tracking-tight"
               style={{ fontFamily: "Manrope", color: colors.onSurface }}
             >
-              {rx.doctor}
+              {rx.doctor.firstName+" "+rx.doctor.lastName}
             </h3>
             <span
               className="px-3 py-1 text-[10px] font-bold rounded-full uppercase tracking-widest"
@@ -49,7 +53,7 @@ export default function PrescriptionCard({ rx, setCurrNav }) {
                 color: isActive ? colors.primary : "#64748b",
               }}
             >
-              {rx.status}
+              Active
             </span>
           </div>
           <div className="flex flex-wrap items-center gap-x-6 gap-y-1">
@@ -58,21 +62,21 @@ export default function PrescriptionCard({ rx, setCurrNav }) {
               style={{ color: colors.onSurfaceVariant }}
             >
               <Icon name="calendar_today" size={14} color="#94a3b8" />
-              {rx.date}
+              {new Date(rx.createdAt).toDateString()}
             </p>
-            <p
+            {/* <p
               className="text-sm flex items-center gap-1.5"
               style={{ color: colors.onSurfaceVariant }}
             >
               <Icon name="diagnosis" size={14} color="#94a3b8" />
               {rx.diagnosis}
-            </p>
+            </p> */}
             <p
               className="text-sm flex items-center gap-1.5"
               style={{ color: colors.onSurfaceVariant }}
             >
               <Icon name="stethoscope" size={14} color="#94a3b8" />
-              {rx.specialty}
+              {rx.doctor.doctorId.specialization}
             </p>
           </div>
         </div>
@@ -83,7 +87,7 @@ export default function PrescriptionCard({ rx, setCurrNav }) {
         <button
           onMouseEnter={() => setViewHovered(true)}
           onMouseLeave={() => setViewHovered(false)}
-          onClick={()=>setCurrNav('prescriptionDetail')}
+          onClick={handleDetail}
           className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors"
           style={{
             background: viewHovered ? colors.surfaceContainerHigh : colors.surfaceContainerLow,
@@ -97,7 +101,7 @@ export default function PrescriptionCard({ rx, setCurrNav }) {
           View Details
         </button>
 
-        <button
+        {/* <button
           onMouseEnter={() => setDlHovered(true)}
           onMouseLeave={() => setDlHovered(false)}
           className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all"
@@ -111,7 +115,7 @@ export default function PrescriptionCard({ rx, setCurrNav }) {
         >
           <Icon name="picture_as_pdf" size={18} color={dlHovered ? colors.primaryContainer : colors.onSurfaceVariant} />
           Download PDF
-        </button>
+        </button> */}
       </div>
     </div>
   );

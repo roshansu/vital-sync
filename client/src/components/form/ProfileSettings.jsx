@@ -10,17 +10,27 @@ import EditableInput from './EditableInput'
 import Card from './Card'
 import SectionHeader from './SectionHeader'
 import FooterAction from './FooterAction'
+import apiCall from "../../api/apiCall";
+import LoadingSpinner from "../LoadingSpinner";
+import { useEffect } from "react";
 
 export default function ProfileSettings() {
   // Personal info — only gender & dob editable
   const [gender, setGender]     = useState("Female");
   const [dob, setDob]           = useState("1992-05-14");
 
+  const [loading, setLoading] = useState(true)
+
   // Bio (editable)
   const [bio, setBio] = useState(
     "Regular outpatient since 2022. Managing mild hypertension and seasonal allergies. Very active lifestyle, high health literacy."
   );
 
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
+  const [phone, setPhone] = useState('')
+  const [email, setEmail] = useState('')
+  const [image, setImage] = useState('')
   // Medical info
   const [bloodGroup, setBloodGroup]   = useState("O Positive (O+)");
   const [conditions, setConditions]   = useState("Hypertension");
@@ -34,25 +44,110 @@ export default function ProfileSettings() {
 
   // Address
   const [address, setAddress] = useState({
-    line: "742 Evergreen Terrace",
-    city: "Springfield",
-    state: "Illinois",
-    pincode: "62704",
+    line: "",
+    city: "",
+    state: "",
+    pincode: "",
   });
 
   // Emergency contact
   const [emergency, setEmergency] = useState({
-    name: "Marco Rodriguez",
-    relationship: "Spouse",
-    phone: "+1 (555) 0987-654",
+    name: "",
+    relationship: "",
+    phone: "",
   });
 
-  const [showToast, setShowToast] = useState(false);
+  const [showToast, setShowToast] = useState({
+    visible: false,
+    msg: ''
+  });
   const [saveHovered, setSaveHovered] = useState(false);
 
-  const handleSave = () => {
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3000);
+  async function getData() {
+    try{
+      const res = await apiCall('/patient/profile', "GET")
+      const data = res.data
+      
+      if(res.success){
+        console.log("inside",data)
+        setEmergency({
+          relationship: data?.emergancyContact?.relation,
+          name: data?.emergancyContact?.name,
+          phone: data?.emergancyContact?.phone
+        })
+        console.log("emergancy")
+
+        setAddress({
+          line: data?.address?.street,
+          city: data?.address?.city,
+          state: data?.address?.state,
+          pincode: data?.address?.postalCode
+        })
+        console.log("address")
+        setAllergies(data?.medicalInfo?.allergies)
+        setMedHistory(data?.medicalInfo?.medicalHistory)
+        setConditions(data?.medicalInfo?.conditions)
+        setBloodGroup(data?.blood)
+        setDob(data?.userId?.dob)
+        setGender(data?.userId?.gender)
+        // console.log("name", data?.userId?.firstName)
+        setFirstName(data?.userId?.firstName)
+        setLastName(data?.userId?.lastName)
+        setEmail(data?.userId?.email)
+        setPhone(data?.userId?.phone)
+        setBio(data?.userId?.bio)
+        setImage(data?.userId?.imageUrl)
+      }
+    }catch(err){
+    }
+    setLoading(false)
+
+  }
+
+  // console.log(firstName, lastName)
+
+  useEffect(()=>{
+    getData()
+  }, [])
+
+  const handleSave = async() => {
+    setShowToast({
+      visible: true,
+      msg: "Updating profile please wait..."
+    })
+    try{
+      const data = {
+      gender,
+      dob,
+      bio,
+      allergies,
+      medHistory,
+      conditions,
+      bloodGroup,
+      street: address.line,
+      city: address.city,
+      state: address.state,
+      postalCode: address.pincode,
+      name: emergency.name,
+      relation: emergency.relationship,
+      phone: emergency.phone
+    }
+
+
+    const res = await apiCall('/patient/profile', "POST", data)
+    setShowToast({
+      visible: true,
+      msg: res.message
+    })
+    // console.log(data)
+
+
+    }catch(err){
+
+    }
+
+    setTimeout(() => setShowToast({visible: false}), 3000);
+
   };
 
   const removeAllergy = (a) => setAllergies((prev) => prev.filter((x) => x !== a));
@@ -78,6 +173,8 @@ export default function ProfileSettings() {
     padding: "10px 16px",
     fontSize: 14,
   });
+
+  if(loading) return<LoadingSpinner/>
 
   return (
     <>
@@ -190,7 +287,7 @@ export default function ProfileSettings() {
                 <div>
                     
                   <FieldLabel required>Full Legal Name</FieldLabel>
-                  <LockedField value="Elena Rodriguez" />
+                  <LockedField value={firstName+" "+lastName} />
                 </div>
                 <div>
                   <FieldLabel>Patient ID</FieldLabel>
@@ -223,25 +320,25 @@ export default function ProfileSettings() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <FieldLabel required>First Name</FieldLabel>
-                    <LockedField value="Elena" />
+                    <LockedField value={firstName} />
                   </div>
                   <div>
                     <FieldLabel required>Last Name</FieldLabel>
-                    <LockedField value="Rodriguez" />
+                    <LockedField value={lastName} />
                   </div>
                 </div>
 
                 {/* Email (locked) */}
                 <div>
                   <FieldLabel required>Email Address</FieldLabel>
-                  <LockedField value="elena.r@example.health" />
+                  <LockedField value={email} />
                 </div>
 
                 {/* Phone + Gender */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <FieldLabel required>Phone Number</FieldLabel>
-                    <LockedField value="+1 (555) 0123-456" />
+                    <LockedField value={phone} />
                   </div>
                   <div>
                     <FieldLabel required>Gender</FieldLabel>
@@ -393,14 +490,14 @@ export default function ProfileSettings() {
                   </div>
                 </div>
 
-                <div>
+                {/* <div>
                   <FieldLabel required>Current Medications</FieldLabel>
                   <EditableInput
                     value={medications}
                     onChange={(e) => setMedications(e.target.value)}
                     placeholder="e.g. Lisinopril 10mg"
                   />
-                </div>
+                </div> */}
 
                 <div>
                   <FieldLabel>Medical History</FieldLabel>
@@ -447,17 +544,7 @@ export default function ProfileSettings() {
                   ))}
                 </div>
 
-                {/* Map preview */}
-                <div
-                  className="mt-2 rounded-lg overflow-hidden"
-                  style={{ aspectRatio: "21/9", filter: "grayscale(1) contrast(0.8)", opacity: 0.7 }}
-                >
-                  <img
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzlmK511i-DTNJ7CjGWxFXLVoSX4lcr7BgK1x7kmBdvFTWA19ga6qg-PmXsfQoVEEYO9dfsjhPzCgqepDTZ5PPhxEUebu6uWS59W4cjvNRrB7J_V5lsq0eYYj74cNp8nGLAeaT9s-IZFNe-iIs6ArNJKK1iVRyRLu4h0Rxjv7128nuswxyA9AsM_Q0MUUx8b1dPvH3PhMnB0P7UwoG3PfwbDSjUGgBPJqUWcakM0CdcgRaSvj-EDaLeAIa0xW6qaRmzlenQCJ2mjjS"
-                    alt="Location Map"
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+
               </Card>
             </section>
 
@@ -540,7 +627,7 @@ export default function ProfileSettings() {
         </main>
       </div>
 
-      <Toast visible={showToast} />
+      <Toast visible={showToast.visible} msg={showToast.msg} />
     </>
   );
 }

@@ -6,7 +6,7 @@ import { colors } from '../../constant/style';
 import Icon from '../appointment/Icon';
 import apiCall from '../../api/apiCall';
 import LoadingSpinner from '../LoadingSpinner';
-
+import Toast from '../form/Toast'
 
 
 const INITIAL_APPOINTMENTS = [
@@ -88,6 +88,10 @@ export default function ManageAppointments() {
   const [visible,        setVisible]        = useState(false);
   const [loading, setLoading] = useState(true)
   const [data, setData] = useState([])
+  const [updating, setUpdating] = useState({
+    visible: false,
+    msg: ''
+  })
   // Stagger-in animation on mount
 
     async function getData() {
@@ -123,31 +127,84 @@ export default function ManageAppointments() {
     );
 
   const handleApprove  = (appt) =>
-    setConfirm({ type: "approve",  appt, message: `Approve appointment for ${appt.patient.firstName+" "+appt.patient.lastName}?`, label: "approve" });
+    setConfirm({ type: "approve",  appt, patientId: appt.patient.patientId, message: `Approve appointment for ${appt.patient.firstName+" "+appt.patient.lastName}?`, label: "approve" });
   const handleReject   = (appt) =>
     setConfirm({ type: "reject",   appt, message: `Reject appointment for ${appt.patient.firstName+" "+appt.patient.lastName}? This will notify the patient.`, label: "reject", danger: true });
   const handleComplete = (appt) =>
     setConfirm({ type: "complete", appt, message: `Mark ${appt.patient.firstName+" "+appt.patient.lastName}s appointment as completed?`, label: "complete" });
 
   const handleConfirm = async() => {
-    if (!confirm) return;
-    const map = { approve: "approved", reject: "rejected", complete: "completed" };
-    const res = await apiCall(`/doctor/appointment/${map[confirm.type]}`, "PATCH", {id: confirm.appt._id})
-    console.log(confirm.appt._id, map[confirm.type])
-    updateStatus(confirm.appt._id, map[confirm.type]);
-    setConfirm(null);
+    setUpdating({
+      visible: true,
+      msg: "Updating please wait..."
+    })
+      setConfirm(null);
+    try{
+      if (!confirm) return;
+      const map = { approve: "approved", reject: "rejected", complete: "completed" };
+      const res = await apiCall(`/doctor/appointment/${map[confirm.type]}`, "PATCH", {id: confirm.appt._id, patientId: confirm.patientId})
+    
+
+      if(res.success){
+        updateStatus(confirm.appt._id, map[confirm.type]);
+      }
+      setUpdating({
+        visible: true,
+        msg: res.message
+      })
+
+
+    }catch(err){
+      setUpdating({
+        visible: false,
+        msg: err.message
+      })
+    }
+
+    setTimeout(() => {
+      setUpdating({
+        visible: false
+      })
+    }, 3000);
   };
 
-  const handleRescheduleConfirm = ({ date, time }) => {
-    const formatted = `${date} · ${time}`;
-    setAppointments((prev) =>
-      prev.map((a) =>
-        a._id === rescheduleAppt._id
-          ? { ...a, date: date.replace(/-/g, "/"), time }
-          : a
-      )
-    );
-    setRescheduleAppt(null);
+  const handleRescheduleConfirm = async({ date, time, note }) => {
+    setUpdating({
+      visible: true,
+      msg: "Rescheduling please wait..."
+    })
+      setRescheduleAppt(null);
+      try{
+        const formatted = `${date} · ${time}`;
+
+        const res = await apiCall('/doctor/appointment', "PUT", {date, time, note, id:rescheduleAppt._id})
+        if(res.success){
+          setAppointments((prev) =>
+            prev.map((a) =>
+              a._id === rescheduleAppt._id
+                ? { ...a, date: date.replace(/-/g, "/"), time }
+                : a
+            )
+          );
+        }
+
+      setUpdating({
+        visible: true,
+        msg: res.message
+      })
+
+      }catch(err){
+        setUpdating({
+          visible: false,
+          msg: err.message
+        })
+      }
+
+    setTimeout(() => {
+      setUpdating({
+        visible: false
+      })
+    }, 3000);
   };
 
   const counts = STATUS_TABS.reduce((acc, tab) => {
@@ -277,7 +334,7 @@ export default function ManageAppointments() {
                   }}
                 >
                   <AppointmentRow
-                    appt={appt}
+                    appt={appt} patientId={appt.patient._id}
                     visible={visible}
                     onApprove={handleApprove}
                     onReject={handleReject}
@@ -310,6 +367,10 @@ export default function ManageAppointments() {
           onCancel={() => setConfirm(null)}
         />
       )}
+
+      {
+        (updating.visible && <Toast visible={updating.visible} msg={updating.msg} />)
+      }
     </>
   );
 }

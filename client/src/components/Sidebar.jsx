@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useEffect } from 'react';
 import {clearUserData} from '../lib/setLocalData'
+import { getUserData } from '../lib/setLocalData';
 
 
 export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
@@ -15,6 +16,8 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
     setActive(id);
     setCurrNav(id);
   };
+
+  const data = getUserData()
 
   function handleLogout(){
     if(window.confirm('Are sure logout?')){
@@ -186,11 +189,11 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
           />
 
           {/* Settings */}
-          <NavLink
+          {/* <NavLink
             item={{ id: "settings", label: "Settings", icon: "settings" }}
             isActive={active === "settings"}
             onClick={handleNav}
-          />
+          /> */}
         </nav>
 
         {/* ── Footer: User + Logout ─────────────────────────────────────────── */}
@@ -208,6 +211,7 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
           <div onClick={()=>setCurrNav('profile')}
             style={{
               display: "flex",
+              cursor: "pointer",
               alignItems: "center",
               gap: 10,
               padding: "12px 12px",
@@ -216,7 +220,7 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
             }}
           >
             <img
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkx-urR2A4d0egJcJbmh5sJvsz15uTQVefmA5laD6kzpVePZ8DAMAGBGlx6NCvGHUqrUaT2nx9COpfmHCqfmYCu1A41-zusDY4N2Fn1WChLh8JpD4t0i7vhn0i4_G_gEVhPQI3khXeczjfSAu_WrPa6iIDDV8FTuisBv3LGVfKMNVmSjEOAHiipax45VmsC7uig1_hWe6C5NCUZXdyNHXdctOhnGJ_UKHIdOK8kqjcDCBCH0nHemexSB9nwQ4umYuc9T_bTFKB-SXC"
+              src="https://cdn-icons-png.magnific.com/512/3607/3607444.png"
               alt="Dr. Julian Vance"
               style={{
                 width: 38,
@@ -241,20 +245,7 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
                   lineHeight: 1.2,
                 }}
               >
-                Dr. Julian Vance
-              </p>
-              <p
-                style={{
-                  fontSize: 11,
-                  fontWeight: 500,
-                  color: "#64748b",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  marginTop: 2,
-                }}
-              >
-                Chief Administrator
+                {data.firstName+" "+data.lastName}
               </p>
             </div>
           </div>
@@ -266,6 +257,7 @@ export default function Sidebar({ activeId, setCurrNav, currNav, NAV_ITEMS }) {
             onMouseLeave={() => setLogoutHovered(false)}
             style={{
               display: "flex",
+              cursor: "pointer",
               alignItems: "center",
               justifyContent: "space-between",
               padding: "10px 16px",

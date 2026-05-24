@@ -14,7 +14,6 @@ export const patientNav = [
   { id: "doctors",       label: "Doctors",        icon: "medical_services"  },
   { id: "appointments",  label: "Appointments",   icon: "event"             },
   { id: "prescriptions", label: "Prescriptions",  icon: "description"       },
-  { id: "reports",       label: "Reports",        icon: "bar_chart"         },
   { id: "chatBot",       label: "Ai Assistant",    icon: "assistant"         },
 
 ]
@@ -24,7 +23,6 @@ export const doctortNav = [
   { id: "patients",      label: "Patients",       icon: "person"            },
   { id: "schedule",      label: "Schedule",       icon: "list"            },
   { id: "appointments",  label: "Appointments",   icon: "event"             },
-  { id: "chatBot",       label: "Ai Assistant",    icon: "assistant"         },
 
 ]
 

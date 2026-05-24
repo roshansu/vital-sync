@@ -5,7 +5,7 @@ import StatusBadge from './StatusBadge'
 import { useState } from "react";
 import Icon from "../appointment/Icon";
 
-export default function AppointmentRow({ appt, onApprove, onReject, onComplete, onReschedule, visible }) {
+export default function AppointmentRow({ appt, patientId, onApprove, onReject, onComplete, onReschedule, visible }) {
   // console.log("apppt",appt)
   
   const [hovered, setHovered] = useState(false);
@@ -38,7 +38,7 @@ export default function AppointmentRow({ appt, onApprove, onReject, onComplete, 
               {appt.patient.firstName+" "+appt.patient.lastName}
             </h3>
             <p className="text-xs mt-0.5 font-medium" style={{ color: colors.onSurfaceVariant }}>
-              {appt.date} · {appt.time}
+              {new Date(appt.date).toLocaleDateString("en-CA")} · {appt.time}
             </p>
           </div>
 

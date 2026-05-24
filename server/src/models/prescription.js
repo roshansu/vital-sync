@@ -4,7 +4,9 @@ import mongoose from "mongoose";
 
 const medicineSchema = new mongoose.Schema({
 
-    medicineName: {
+    id: Number,
+
+    name: {
         type: String,
         required: true,
         trim: true
@@ -67,23 +69,23 @@ const patientPrescriptionSchema = new mongoose.Schema({
 
     medicines: [medicineSchema],
 
-    generalInstructions: {
+    instructions: {
         type: String,
         trim: true
     },
 
-    dietaryLifestyleAdvice: {
+    dietTags:[ {
         type: String,
         trim: true
-    }
+    }]
 
 }, { timestamps: true });
 
 
 // indexes
-patientPrescriptionSchema.index({ patient: 1 });
-patientPrescriptionSchema.index({ doctor: 1 });
-patientPrescriptionSchema.index({ appointment: 1 });
+// patientPrescriptionSchema.index({ patient: 1 });
+// patientPrescriptionSchema.index({ doctor: 1 });
+// patientPrescriptionSchema.index({ appointment: 1 });
 
 
 const Prescription = mongoose.model(

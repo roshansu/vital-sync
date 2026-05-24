@@ -1,5 +1,7 @@
 import Slot from "../../models/Slot.js";
-import Doctor from '../../models/doctor.js'
+import Doctor from "../../models/doctor.js";
+import Appointment from "../../models/appointment.js";
+import DoctorStats from "../../models/doctorStats.js";
 
 export const addSlot = async (req, res) => {
   try {
@@ -15,18 +17,19 @@ export const addSlot = async (req, res) => {
       slotId,
     } = req.body;
 
-    console.log("slot duration",slotDuration)
+    console.log("slot duration", slotDuration);
 
-    if(!req.doctor.isApproved){
+    if (!req.doctor.isApproved) {
       return res.status(401).json({
         success: false,
-        message: "Please update your profile first, add license no. slot not added",
+        message:
+          "Please update your profile first, add license no. slot not added",
       });
     }
 
     const doctorId = req.doctor?._id;
-    const userId = req.user._id
-    console.log("slotId",slotId)
+    const userId = req.user._id;
+    console.log("slotId", slotId);
     if (!doctorId) {
       return res.status(401).json({
         success: false,
@@ -96,7 +99,7 @@ export const addSlot = async (req, res) => {
         {
           new: true,
           runValidators: true,
-        }
+        },
       );
 
       if (!slot) {
@@ -131,7 +134,6 @@ export const addSlot = async (req, res) => {
   }
 };
 
-
 export const getMySlot = async (req, res) => {
   try {
     const userId = req.user?._id;
@@ -145,7 +147,7 @@ export const getMySlot = async (req, res) => {
 
     const slot = await Slot.findOne({ userId });
 
-    console.log(slot)
+    console.log(slot);
 
     if (!slot) {
       return res.status(404).json({
@@ -167,5 +169,51 @@ export const getMySlot = async (req, res) => {
       message: "Internal server error",
       error: error.message,
     });
+  }
+};
+
+export const getStats = async (req, res) => {
+  try {
+    const doctorId = req.doctor._id;
+    const [patient, appointment, stats] = await Promise.all([
+      Doctor.findOne({
+        _id: doctorId,
+      }).populate({
+        path: "patientList",
+        select: 'userId',
+        options: {
+          sort: { createdAt: -1 },
+          limit: 3,
+        },
+
+        populate: [
+          {
+            path: "userId",
+
+            select: "firstName lastName imageUrl bio gender dob",
+          },
+        ],
+      }),
+
+      Appointment.findOne({doctorId}).select('date time status type patient').populate('patient', 'firstName lastName'),
+
+      DoctorStats.findOne({doctorId})
+      
+    ]);
+
+    const data = {
+      patient, appointment, doctorId
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Data found",
+      data
+    })
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
   }
 };

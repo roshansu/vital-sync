@@ -5,13 +5,15 @@ import validate from '../lib/validate.js'
 import Doctor from '../models/doctor.js'
 import User from '../models/user.js'
 import redisClient from '../config/redis.js'
-
+import Patient from '../models/patient.js'
+import Address from '../models/address.js'
+import DoctorStats from '../models/doctorStats.js'
 
 export const register = async(req, res)=>{
     try{ 
         // console.log(req.body)
         const {email, password, firstName, lastName, role} = req.body
-       
+    //    console.log(object)
         validate(req.body)
 
         const isExist = await User.findOne({email})
@@ -28,12 +30,38 @@ export const register = async(req, res)=>{
         if(role === 'doctor'){
             const {specialization, qualification} = req.body
 
-             await Doctor.create({
+            const doc= await Doctor.create({
                 specialization, qualification,
                 userId: user._id
             })
 
+            await DoctorStats.create({doctorId: doc._id})
+
+            user.doctorId = doc._id
+
         }
+
+        const doc = await Address.create({
+            userId: user._id
+        })
+
+        user.addressId = doc._id
+
+        console.log("auth role", role)
+
+        if(role === 'patient'){
+
+            console.log("hitting patient")
+            const res = await Patient.create({
+                userId: user._id
+            })
+
+            user.patientId = res._id
+
+            console.log(res)
+        }
+
+        await user.save()
 
         const token = jwt.sign({email, _id: user._id, role: "user"}, jwtKey, {expiresIn: "7d"})
         // res.cookie("token", token)
@@ -44,7 +72,7 @@ export const register = async(req, res)=>{
             role,
             token
         }
-        console.log(userData)
+        // console.log(userData)
         res.status(200).send({message: "user registered", success: true, userData})
         
     }catch(err){

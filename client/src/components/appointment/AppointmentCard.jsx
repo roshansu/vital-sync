@@ -1,9 +1,41 @@
 import { useState } from "react"
 import { colors } from "../../constant/style";
 import Icon from "./Icon";
+import apiCall from "../../api/apiCall";
+import Toast from "../form/Toast";
 
 export default function AppointmentCard({ appt, onCancel }) {
   const [cancelConfirm, setCancelConfirm] = useState(false);
+  const [show, setShow] = useState({
+    visible: false,
+    msg: ''
+  })
+
+  async function handleCancel() {
+    setShow({
+      visible: true,
+      msg: "Canceling please wait"
+    })
+    setCancelConfirm(false);
+    try{
+       const res = await apiCall(`/patient/appointment/update-status/${appt._id}`, "PUT", {status: 'canceled'})
+      setShow({
+        visible: true,
+        msg: res.message
+      })
+
+      if(res.success)  
+       onCancel(appt.id)
+    }catch(err){
+
+    }
+
+    setTimeout(() => {
+      setShow({
+        visible: false
+      })
+    }, 3000);
+  }
 
   const date = new Date(appt.date)
   const formatDate = date.toDateString()
@@ -146,7 +178,7 @@ export default function AppointmentCard({ appt, onCancel }) {
                 Sure?
               </span>
               <button
-                onClick={() => { onCancel(appt.id); setCancelConfirm(false); }}
+                onClick={handleCancel}
                 className="px-3 py-1.5 text-xs font-bold rounded-lg transition-opacity hover:opacity-80"
                 style={{ background: colors.error, color: colors.onPrimary }}
               >
@@ -189,6 +221,8 @@ export default function AppointmentCard({ appt, onCancel }) {
           </button> */}
         </div>
       </div>
+
+      <Toast visible={show.visible} msg={show.msg} />
     </div>
   );
 }

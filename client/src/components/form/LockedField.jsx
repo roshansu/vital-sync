@@ -3,6 +3,8 @@ import Icon from "../appointment/Icon";
 
 
 export default function LockedField({ value, mono = false }) {
+
+  // console.log(value)
   return (
     <div
       className="w-full rounded-lg px-4 py-2.5 text-sm flex items-center justify-between"

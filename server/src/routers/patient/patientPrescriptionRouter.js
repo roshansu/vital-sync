@@ -14,7 +14,7 @@ const patientPrescriptionRoute  = express.Router();
 
 
 // GET ALL PRESCRIPTIONS
-patientPrescriptionRoute .get(
+patientPrescriptionRoute.get(
     "/",
     verifyUser,
     verifyPatient,
@@ -23,11 +23,11 @@ patientPrescriptionRoute .get(
 
 
 // GET SINGLE PRESCRIPTION
-patientPrescriptionRoute .get(
-    "/:id",
-    verifyUser,
-    verifyPatient,
-    getSinglePrescription
-);
+// patientPrescriptionRoute .get(
+//     "/:id",
+//     verifyUser,
+//     verifyPatient,
+//     getSinglePrescription
+// );
 
 export default patientPrescriptionRoute ;

@@ -17,9 +17,9 @@ export default function MedicineRow({ med }) {
           <div className="flex items-center gap-3">
             <div
               className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
-              style={{ background: med.iconBg }}
+              style={{ background: "eff6ff" }}
             >
-              <Icon name={med.icon} size={16} color={med.iconColor} />
+              <Icon name="pill" size={16} color="004ac6" />
             </div>
             <div>
               <span
@@ -27,9 +27,6 @@ export default function MedicineRow({ med }) {
                 style={{ color: colors.onSurface }}
               >
                 {med.name}
-              </span>
-              <span className="text-[10px] font-medium" style={{ color: "#94a3b8" }}>
-                {med.brand}
               </span>
             </div>
           </div>

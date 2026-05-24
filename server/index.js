@@ -11,6 +11,8 @@ import redisClient from "./src/config/redis.js";
 import cors from 'cors'
 import doctorProfileRoute from "./src/routers/doctor/doctorProfileRoute.js";
 import doctorAppointmentRoute from "./src/routers/doctor/doctorAppoitmentRoute.js";
+import patientManagementRoute from "./src/routers/doctor/patientManagementRoute.js";
+
 
 const app = e();
 const PORT = 5000;
@@ -31,6 +33,8 @@ app.use('/api/doctor', doctorRoute)
 app.use('/api/doctor/profile', doctorProfileRoute)
 
 app.use('/api/doctor/appointment', doctorAppointmentRoute)
+
+app.use('/api/doctor/patient', patientManagementRoute)
 
 const initialize = async () => {
   try {

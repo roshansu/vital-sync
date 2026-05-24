@@ -8,6 +8,10 @@ const appointmentSchema = new mongoose.Schema({
         required: true
     },
 
+    canceled:{
+        type: Boolean,
+        default: false
+    },
     doctorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Doctor",
@@ -39,11 +43,7 @@ const appointmentSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: [
-            "pending",
-            "confirmed",
-            "completed",
-            "cancelled",
-            "rejected"
+            "pending", "approved", "completed", "rejected", "canceled"
         ],
         default: "pending"
     },
@@ -99,7 +99,14 @@ const appointmentSchema = new mongoose.Schema({
         type: String,
         enum: ["patient", "doctor", "admin"]
     },
-
+    reschedule:{
+        type: Boolean,
+        default: false
+    },
+    rescheduleReason:{
+        type: String,
+        trim: true
+    },
     cancellationReason: {
         type: String
     }
