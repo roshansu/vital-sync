@@ -202,7 +202,7 @@ export const getStats = async (req, res) => {
     ]);
 
     const data = {
-      patient, appointment, doctorId
+      patient, appointment, stats
     }
 
     res.status(200).json({
