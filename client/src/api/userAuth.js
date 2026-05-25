@@ -1,7 +1,7 @@
 import { getUserData } from "../lib/setLocalData"
 
 
-const baseApi = 'https://vital-sync-ve9t.vercel.app'
+const baseApi = 'https://vital-sync.onrender.com'
 // 'http://localhost:5000'
 // 'https://vital-sync-ve9t.vercel.app'
 // const baseApi = 'http://172.16.186.123:5000'
