@@ -2,6 +2,12 @@
 
 ## 📌 Project Overview
 
+video explanation: - 
+https://drive.google.com/file/d/1oTN5dGEUR7nOZL9f6eW_N6nF8QcF027A/view?usp=sharing
+
+live link: -
+https://vital-sync-virid.vercel.app/
+
 ERD overview: -
 https://app.eraser.io/workspace/Ml3PmonmRyhjQZK8bKbF?origin=share
 
