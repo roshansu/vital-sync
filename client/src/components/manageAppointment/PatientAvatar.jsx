@@ -3,14 +3,14 @@ import Icon from "../appointment/Icon";
 
 export default function PatientAvatar({ appt }) {
 
-  // console.log(appt)
+  console.log(appt)
   const initials = appt.patient.firstName.split(" ").map((w) => w[0]).slice(0, 2).join("");
   return (
     <div className="relative flex-shrink-0">
-      {appt.patient.imageUrl ? (
+      {appt.patient?.imageUrl ? (
         <img
-          src={appt.img}
-          alt={appt.patient}
+          src={appt.patient?.imageUrl}
+          alt={appt.patient?.firstName}
           className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover"
         />
       ) : (
