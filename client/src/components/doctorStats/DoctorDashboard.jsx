@@ -100,7 +100,7 @@ export default function DoctorDashboard({setCurrNav}) {
               iconBg={`${colors.tertiary}0d`}
               iconColor={colors.tertiary}
               label="Total Earnings"
-              value={"$,"+data?.stats?.totalEarnings || 0}
+              value={"$"+data?.stats?.totalEarnings || 0}
               sub="Net payout pending"
               subIcon="payments"
               subColor={colors.tertiary}

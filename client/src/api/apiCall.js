@@ -10,7 +10,7 @@ const apiCall = async (
   body = null,
   type = "application/json"
 ) => {
-  console.log(endpoint);
+  // console.log(endpoint);
 
   const setLoading = getGlobalSetLoading();
 
@@ -20,7 +20,7 @@ const apiCall = async (
       localStorage.getItem("userData")
     );
 
-    console.log(token.token);
+    // console.log(token.token);
 
     setLoading(true);
 
@@ -51,7 +51,7 @@ const apiCall = async (
 
     const data = await response.json();
 
-    console.log("apicall data", data);
+    // console.log("apicall data", data);
 
     setLoading(false);
 
