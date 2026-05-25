@@ -52,7 +52,7 @@ export default function PrescriptionModal({ patient, onClose }) {
       userId: patient.userId._id
     }
 
-    const res = apiCall('/doctor/patient', "POST", data)
+    const res = apiCall('/doctor/patient/prescription', "POST", data)
 
     console.log(data)
     setSaving(true);
