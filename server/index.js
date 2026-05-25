@@ -12,11 +12,12 @@ import cors from 'cors'
 import doctorProfileRoute from "./src/routers/doctor/doctorProfileRoute.js";
 import doctorAppointmentRoute from "./src/routers/doctor/doctorAppoitmentRoute.js";
 import patientManagementRoute from "./src/routers/doctor/patientManagementRoute.js";
-
+import apiLimiter from "./src/middleware/apiRateLimit.js";
 
 const app = e();
 const PORT = 5000;
 
+app.use(apiLimiter)
 app.use(e.json({ limit: '10mb', type: 'application/json' }));
 app.use(e.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cors())

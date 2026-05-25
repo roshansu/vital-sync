@@ -17,7 +17,7 @@ export const userAuth = async(route, data)=>{
         })
 
         const response = await res.json()
-        console.log(response)
+        // console.log(response)
         return response
     }catch(err){
         console.log(err)
