@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 8000;
 app.use(apiLimiter)
 app.use(e.json({ limit: '10mb', type: 'application/json' }));
 app.use(e.urlencoded({ extended: true, limit: '10mb' }));
-app.use(cors())
+app.use(cors(['https://vital-sync-virid.vercel.app', 'http://localhost:5173']))
 app.use(cookieParser());
 
 app.use('/api/user', userRouter)
