@@ -31,11 +31,11 @@ const verifyUser = async(req, res, next)=>{
             throw new Error("User does not exist")
         }
         // console.log("object")
-         const isBlocked = await redisClient.exists(`token:${token}`)
+        //  const isBlocked = await redisClient.exists(`token:${token}`)
         // console.log(isBlocked)
-        if(isBlocked){
-            throw new Error("invalid token")
-        }
+        // if(isBlocked){
+        //     throw new Error("invalid token")
+        // }
 
         req.user = user
         next()
