@@ -13,9 +13,11 @@ import doctorProfileRoute from "./src/routers/doctor/doctorProfileRoute.js";
 import doctorAppointmentRoute from "./src/routers/doctor/doctorAppoitmentRoute.js";
 import patientManagementRoute from "./src/routers/doctor/patientManagementRoute.js";
 import apiLimiter from "./src/middleware/apiRateLimit.js";
+import dotenv from 'dotenv'
+dotenv.config()
 
 const app = e();
-const PORT = 5000;
+const PORT = process.env.PORT || 8000;
 
 app.use(apiLimiter)
 app.use(e.json({ limit: '10mb', type: 'application/json' }));
