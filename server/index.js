@@ -39,12 +39,14 @@ app.use('/api/doctor/appointment', doctorAppointmentRoute)
 
 app.use('/api/doctor/patient', patientManagementRoute)
 
+app.listen(PORT, () => {
+      console.log("Server is listening", PORT);
+});
+
 const initialize = async () => {
   try {
     await Promise.all([connectDb(), redisClient.connect()]);
-    app.listen(PORT, () => {
-      console.log("Server is listening", PORT);
-    });
+    
   } catch (err) {
     console.log("err: " + err);
   }
